@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -21,19 +21,9 @@ public class ViewController {
     @GetMapping("/SMZ7010")
     public String tagMasterStandard(Model model, HttpServletRequest request) {
 
-        HttpSession session = request.getSession();
-        
-        // 모델에 데이터 추가
-        model.addAttribute("pageTitle", "Tag Master Standard");
+        model.addAttribute("pageTitle", "SMZ7010-TagMasterStandard");
         model.addAttribute("currentTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        model.addAttribute("contextPath", "/SMZ");
-        model.addAttribute("baseUrl", "https://mesdev.lsmnm.com");
 
-        // Spring Session 에서 사용자 정보 가져오기
-        String userId = (String) session.getAttribute("GW_USER_ID");
-        String userName = (String) session.getAttribute("GW_USER_NM");
-        String plantCode = (String) session.getAttribute("GW_PLANT_CD");
-        
         return "TagMasterStandard";
     }
 
@@ -46,8 +36,6 @@ public class ViewController {
 
         model.addAttribute("pageTitle", "Work Tag Standard");
         model.addAttribute("currentTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        model.addAttribute("contextPath", "/SMZ");
-        model.addAttribute("baseUrl", "https://mesdev.lsmnm.com");
 
         return "WorkTagStandard";
     }
@@ -60,4 +48,6 @@ public class ViewController {
 
         return "TagEventAlarmStandard";
     }
+
+
 }

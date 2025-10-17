@@ -21,6 +21,30 @@ public class ProxyController {
         this.restTemplate = restTemplate;
     }
 
+    @GetMapping("/image")
+    public ResponseEntity<byte[]> proxyImage(@RequestParam String path) {
+        String externalUrl = EXTERNAL_API_BASE + path;
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Referer", "https://mesdev.lsmnm.com/SMZ/SMZ7010.do");
+
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+            ResponseEntity<byte[]> response = restTemplate.exchange(
+                    externalUrl,
+                    HttpMethod.GET,
+                    requestEntity,
+                    byte[].class
+            );
+
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.setContentType(response.getHeaders().getContentType());
+            return new ResponseEntity<>(response.getBody(), responseHeaders, response.getStatusCode());
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
     /**
      * Init Service 프록시
      * POST /proxy/init
