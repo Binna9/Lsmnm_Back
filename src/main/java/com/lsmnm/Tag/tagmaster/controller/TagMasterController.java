@@ -31,7 +31,6 @@ public class TagMasterController {
         HttpSession session = request.getSession();
         String result = tagMasterService.callInitService(searchScreenAuthority, session);
 
-        // 응답 헤더에 UTF-8 charset 명시
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
         
@@ -51,7 +50,6 @@ public class TagMasterController {
         HttpSession session = request.getSession();
         String result = tagMasterService.callComboService(code, session);
 
-        // 응답 헤더에 UTF-8 charset 명시
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
         
@@ -69,7 +67,6 @@ public class TagMasterController {
         HttpSession session = request.getSession();
         String result = tagMasterService.callSearchService(session);
 
-        // 응답 헤더에 UTF-8 charset 명시
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 

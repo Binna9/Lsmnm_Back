@@ -52,15 +52,15 @@ public class TagMasterService {
             // todo : 지금은 하드코딩 이지만 나중엔 클라이언트 단에서 받아야 함
             MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             body.add("USER_ID", userId);
-            body.add("PGM_ID", pgmId);
-            body.add("MNU_ID", mnuId);
+            body.add("PGM_ID", "SMZ7010");
+            body.add("MNU_ID", "M000001460");
             body.add("LANG_CD", langCd);
             body.add("LINE_CD", lineCd);
             body.add("gwLoginId", userId);
             body.add("gwServiceName", init);
             body.add("gwLanguageCd", langCd);
             body.add("gwClientIp", clientIp);
-            body.add("gwPgmId", pgmId);
+            body.add("gwPgmId", "SMZ7010");
             body.add("gwPlantCd", plantCd);
 
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);

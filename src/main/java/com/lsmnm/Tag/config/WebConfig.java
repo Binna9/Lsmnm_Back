@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("https://mes.lsmnm.com","https://mes.lsmnm.com","http://localhost:8080")
+                .allowedOrigins("https://mesdev.lsmnm.com","https://mesdev.lsmnm.com","http://localhost:8080")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
@@ -32,7 +32,7 @@ public class WebConfig implements WebMvcConfigurer {
         
         // 이미지 파일을 외부 서버로 프록시
         registry.addResourceHandler("/tag/master/include/images/**")
-                .addResourceLocations("https://mes.lsmnm.com/SCO/include/images/")
+                .addResourceLocations("https://mesdev.lsmnm.com/SCO/include/images/")
                 .setCachePeriod(3600);
     }
 }
