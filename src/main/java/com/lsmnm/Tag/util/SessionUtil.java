@@ -3,13 +3,71 @@ package com.lsmnm.Tag.util;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Enumeration;
+
 @RestController
-@RequestMapping("/save-session")
+@RequestMapping("/session")
 public class SessionUtil {
+
+    @GetMapping("")
+    public ResponseEntity<String> getSessionData(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+
+        try {
+            StringBuilder sessionData = new StringBuilder();
+            sessionData.append("{");
+            sessionData.append("\"success\": true,");
+            sessionData.append("\"sessionId\": \"").append(session.getId()).append("\",");
+            sessionData.append("\"creationTime\": \"").append(new java.util.Date(session.getCreationTime())).append("\",");
+            sessionData.append("\"lastAccessedTime\": \"").append(new java.util.Date(session.getLastAccessedTime())).append("\",");
+            sessionData.append("\"maxInactiveInterval\": ").append(session.getMaxInactiveInterval()).append(",");
+            sessionData.append("\"attributes\": {");
+
+            // 세션 속성들을 JSON 형태로 변환
+            Enumeration<String> attributeNames = session.getAttributeNames();
+            boolean first = true;
+            while (attributeNames.hasMoreElements()) {
+                String attributeName = attributeNames.nextElement();
+                Object attributeValue = session.getAttribute(attributeName);
+
+                if (!first) {
+                    sessionData.append(",");
+                }
+                first = false;
+
+                sessionData.append("\"").append(attributeName).append("\": ");
+
+                if (attributeValue == null) {
+                    sessionData.append("null");
+                } else if (attributeValue instanceof String) {
+                    sessionData.append("\"").append(attributeValue.toString().replace("\"", "\\\"")).append("\"");
+                } else if (attributeValue instanceof Number || attributeValue instanceof Boolean) {
+                    sessionData.append(attributeValue.toString());
+                } else {
+                    // 복잡한 객체는 문자열로 변환
+                    sessionData.append("\"").append(attributeValue.toString().replace("\"", "\\\"")).append("\"");
+                }
+            }
+
+            sessionData.append("}");
+            sessionData.append("}");
+
+            return ResponseEntity.ok()
+                    .header("Content-Type", "application/json; charset=UTF-8")
+                    .body(sessionData.toString());
+
+        } catch (Exception e) {
+            String errorResponse = "{\"success\": false, \"message\": \"" + e.getMessage() + "\"}";
+            return ResponseEntity.status(500)
+                    .header("Content-Type", "application/json; charset=UTF-8")
+                    .body(errorResponse);
+        }
+    }
 
     /**
      * Mock 데이터를 Spring Session 에 저장
@@ -28,6 +86,7 @@ public class SessionUtil {
             return ResponseEntity.badRequest().body(result);
         }
     }
+
 
     /**
      * Mock 데이터를 Spring Session 에 저장
@@ -58,7 +117,7 @@ public class SessionUtil {
             session.setAttribute("SYSTEM_LINK_PAGE", "");
             session.setAttribute("SYSTEM_LINK_VALUES", "");
 
-            return "{\"success\": true, \"message\": \"Mock data saved to Spring Session successfully\"}";
+            return "{\"success\": true, \"message\": \"Mock data saved to Spring Session successfully\", \"sessionData\": {\"GW_USER_ID\":\"99991201\",\"GW_PGM_ID\":\"SI0003\",\"GW_LANG_CD\":\"KO\",\"GW_LINE_CD\":\"\",\"GW_PLANT_CD\":\"1000\",\"GW_CLIENT_IP\":\"10.2.110.216\",\"GW_EMP_NO\":\"99991201\",\"GW_DEPT_CD\":\"\",\"GW_ROLE_CD\":\"MES_INQ_ROLE,MB_TEMP,ITSM\"}}";
 
         } catch (Exception e) {
             return "{\"success\": false, \"message\": \"" + e.getMessage() + "\"}";

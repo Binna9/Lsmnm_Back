@@ -301,9 +301,17 @@ function fc_makeMessageBoxDiv ( msg, msgType, msgDetails ) {
 
 	var sMatchRetrunWord = /\r\n|\r|\n|\\r\\n|\\n|\\r/gi;
 	if( !fc_isNull( msg ) ) {
+		// msg가 문자열이 아닌 경우 문자열로 변환
+		if (typeof msg !== 'string') {
+			msg = String(msg);
+		}
 		msg = msg.replace( sMatchRetrunWord, "<br/>" );
 	};
 	if( msgType != 'Q' && !fc_isNull( msgDetails ) ) {
+		// msgDetails가 문자열이 아닌 경우 문자열로 변환
+		if (typeof msgDetails !== 'string') {
+			msgDetails = String(msgDetails);
+		}
 		msgDetails = msgDetails.replace( sMatchRetrunWord, "<br/>" );
 	};
 
@@ -479,6 +487,12 @@ function fc_filterOraMsg ( errMessage ) {
 	//var C_REGEXP_ORA_ERR = /ORA-[\d]{5}:/g;  ykh
 	var C_REGEXP_ORA_ERR = /EDB-[\d]{5}:/g;
 	var rtnValue = '';
+	
+	// errMessage가 문자열이 아닌 경우 문자열로 변환
+	if (typeof errMessage !== 'string') {
+		errMessage = String(errMessage);
+	}
+	
 	var idxStart = errMessage.search( C_REGEXP_ORA_ERR );
 
 	if ( idxStart > -1 ) {
@@ -653,11 +667,11 @@ function fc_submit ( type, prmServiceNm, prmTransitionNm, prmParam, prmDataType,
 	window.dispMessage = null;
 	window.errMessage  = null;
 
-	//ajax call ..
+	//ajax call
 	$.ajax({
 		global: false,
 		type: 'POST',
-		url: prmModule + '/jqGridJSON.json?ServiceName=' + prmServiceNm + '&' + prmTransitionNm + '=1',
+		url: '/proxy/jqGridJSON.json?ServiceName=' + prmServiceNm + '&' + prmTransitionNm + '=1',
 		data: prmParam,
 		dataType: prmDataType,
 		async: false,
@@ -748,7 +762,7 @@ function fc_submitParam ( type, prmServiceNm, prmTransitionNm, isClearParam, prm
 	$.ajax({
 		global: false,
 		type: 'POST',
-		url: prmModule + '/jqGridJSON.json?ServiceName=' + prmServiceNm + '&' + prmTransitionNm + '=1',
+		url: '/proxy/jqGridJSON.json?ServiceName=' + prmServiceNm + '&' + prmTransitionNm + '=1',
 		data: prmParam,
 		dataType: prmDataType,
 		async: false,
@@ -842,7 +856,7 @@ function fc_submitCall ( type, prmServiceNm, prmTransitionNm, prmParam, prmDataT
 	$.ajax({
 		global: false,
 		type: 'POST',
-		url: prmModule + '/jqGridJSON.json?ServiceName=' + prmServiceNm + '&' + prmTransitionNm + '=1',
+		url: '/proxy/jqGridJSON.json?ServiceName=' + prmServiceNm + '&' + prmTransitionNm + '=1',
 		data: prmParam,
 		dataType: prmDataType,
 		async: true,
@@ -910,7 +924,7 @@ function fc_simpleSubmit ( type, prmServiceNm, prmTransitionNm, prmParam, prmDat
 	$.ajax({
 		global: false,
 		type: 'POST',
-		url: prmModule + '/jqGridJSON.json?ServiceName=' + prmServiceNm + '&' + prmTransitionNm + '=1',
+		url: '/proxy/jqGridJSON.json?ServiceName=' + prmServiceNm + '&' + prmTransitionNm + '=1',
 		data: prmParam,
 		dataType: prmDataType,
 		async: false,
@@ -973,7 +987,7 @@ function fc_submit_file ( type, prmServiceNm, prmTransitionNm, prmParam, prmModu
 	$.ajax({
 		global: false,
 		type: 'POST',
-		url: prmModule + '/jqGridJSON.json?ServiceName=' + prmServiceNm + '&' + prmTransitionNm + '=1',
+		url: '/proxy/jqGridJSON.json?ServiceName=' + prmServiceNm + '&' + prmTransitionNm + '=1',
 		data: prmParam,
 		dataType: prmDataType,
 		async: false,
@@ -1042,7 +1056,7 @@ function fc_submit_fileCall ( type, prmServiceNm, prmTransitionNm, prmParam, prm
 	$.ajax({
 		global: false,
 		type: 'POST',
-		url: prmModule + '/jqGridJSON.json?ServiceName=' + prmServiceNm + '&' + prmTransitionNm + '=1',
+		url: '/proxy/jqGridJSON.json?ServiceName=' + prmServiceNm + '&' + prmTransitionNm + '=1',
 		data: prmParam,
 		dataType: prmDataType,
 		async: true,

@@ -40,14 +40,12 @@ public class ViewController {
         return "WorkTagStandard";
     }
 
+    /**
+     * GET /tag-master/bdp7070
+     * BDP7070.html 페이지를 띄우는 메서드
+     */
     @GetMapping("/BDP7070")
-    public String index(Model model) {
-
-        model.addAttribute("pageTitle", "BDP7070-TagEventAlarmStandard");
-        model.addAttribute("currentTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-
-        return "TagEventAlarmStandard";
+    public String bdp7070Page() {
+        return "BDP/BDP7070";
     }
-
-
 }

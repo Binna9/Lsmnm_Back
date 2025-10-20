@@ -44,89 +44,142 @@ public class ProxyController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+//
+//    /**
+//     * Init Service 프록시
+//     * POST /proxy/init
+//     */
+//    @PostMapping("/init")
+//    public ResponseEntity<?> proxyInit(@RequestParam(defaultValue = "1") String searchSysEnv, HttpServletRequest request) {
+//
+//        String externalUrl = EXTERNAL_API_BASE + "/SCO/jqGridJSON.json?ServiceName=ict.sys.init-service&searchSysEnv=" + searchSysEnv;
+//
+//        HttpSession session = request.getSession();
+//
+//        try {
+//            HttpHeaders headers = createHeaders();
+//            MultiValueMap<String, String> body = createInitRequestBody(session);
+//
+//            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
+//
+//            ResponseEntity<String> response = restTemplate.postForEntity(externalUrl, requestEntity, String.class);
+//
+//            HttpHeaders responseHeaders = new HttpHeaders();
+//            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+//
+//            return ResponseEntity.status(response.getStatusCode())
+//                    .headers(responseHeaders)
+//                    .body(response.getBody());
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+//        }
+//    }
+//
+//    /**
+//     * Tag Master Service 프록시
+//     * POST /proxy/tags
+//     */
+//    @PostMapping("/tags")
+//    public ResponseEntity<?> proxyTags(
+//            @RequestBody(required = false) Map<String, Object> requestBody,
+//            HttpServletRequest request) {
+//
+//        String externalUrl = EXTERNAL_API_BASE + "/SMZ/jqGridJSON.json?ServiceName=smz.tag.master-service&searchTagMst=1";
+//
+//        HttpSession session = request.getSession();
+//
+//        try {
+//            HttpHeaders headers = createHeaders();
+//            MultiValueMap<String, String> body = createTagSearchRequestBody(session);
+//
+//            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
+//
+//            ResponseEntity<String> response = restTemplate.postForEntity(externalUrl, requestEntity, String.class);
+//
+//            HttpHeaders responseHeaders = new HttpHeaders();
+//            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+//
+//            return ResponseEntity.status(response.getStatusCode())
+//                    .headers(responseHeaders)
+//                    .body(response.getBody());
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+//        }
+//    }
+//
+//    /**
+//     * Combo Service 프록시
+//     * POST /proxy/combo
+//     */
+//    @PostMapping("/combo")
+//    public ResponseEntity<?> proxyCombo(
+//            @RequestParam String code,
+//            HttpServletRequest request) {
+//
+//        String externalUrl = EXTERNAL_API_BASE + "/SCO/jqGridJSON.json?ServiceName=ict.sys.code.combo-service&find=1";
+//
+//        HttpSession session = request.getSession();
+//
+//        try {
+//            HttpHeaders headers = createHeaders();
+//            MultiValueMap<String, String> body = createComboRequestBody(code, session);
+//
+//            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
+//
+//            ResponseEntity<String> response = restTemplate.postForEntity(externalUrl, requestEntity, String.class);
+//
+//            HttpHeaders responseHeaders = new HttpHeaders();
+//            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+//
+//            return ResponseEntity.status(response.getStatusCode())
+//                    .headers(responseHeaders)
+//                    .body(response.getBody());
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+//        }
+//    }
 
     /**
-     * Init Service 프록시
-     * POST /proxy/init
+     * 범용 jqGridJSON 프록시 - fc_submit 함수에서 호출하는 API 처리
+     * POST /proxy/jqGridJSON.json
      */
-    @PostMapping("/init")
-    public ResponseEntity<?> proxyInit(@RequestParam(defaultValue = "1") String searchSysEnv, HttpServletRequest request) {
-        
-        String externalUrl = EXTERNAL_API_BASE + "/SCO/jqGridJSON.json?ServiceName=ict.sys.init-service&searchSysEnv=" + searchSysEnv;
-        
-        HttpSession session = request.getSession();
-        
-        try {
-            HttpHeaders headers = createHeaders();
-            MultiValueMap<String, String> body = createInitRequestBody(session);
-
-            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-            
-            ResponseEntity<String> response = restTemplate.postForEntity(externalUrl, requestEntity, String.class);
-            
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-            
-            return ResponseEntity.status(response.getStatusCode())
-                    .headers(responseHeaders)
-                    .body(response.getBody());
-                    
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\": \"" + e.getMessage() + "\"}");
-        }
-    }
-
-    /**
-     * Tag Master Service 프록시
-     * POST /proxy/tags
-     */
-    @PostMapping("/tags")
-    public ResponseEntity<?> proxyTags(
-            @RequestBody(required = false) Map<String, Object> requestBody,
+    @PostMapping(value = "/jqGridJSON.json", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<?> proxyJqGridJson(
+            @RequestParam String ServiceName,
+            @RequestParam(required = false) Map<String, String> allParams,
             HttpServletRequest request) {
         
-        String externalUrl = EXTERNAL_API_BASE + "/SMZ/jqGridJSON.json?ServiceName=smz.tag.master-service&searchTagMst=1";
-        
-        HttpSession session = request.getSession();
-        
-        try {
-            HttpHeaders headers = createHeaders();
-            MultiValueMap<String, String> body = createTagSearchRequestBody(session);
-            
-            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-            
-            ResponseEntity<String> response = restTemplate.postForEntity(externalUrl, requestEntity, String.class);
-            
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-            
-            return ResponseEntity.status(response.getStatusCode())
-                    .headers(responseHeaders)
-                    .body(response.getBody());
-                    
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+        // URL 파라미터에서 ServiceName 과 Transition Name 추출
+        String transitionName = null;
+        for (Map.Entry<String, String> entry : allParams.entrySet()) {
+            if (!entry.getKey().equals("ServiceName") && entry.getValue().equals("1")) {
+                transitionName = entry.getKey();
+                break;
+            }
         }
-    }
-
-    /**
-     * Combo Service 프록시
-     * POST /proxy/combo
-     */
-    @PostMapping("/combo")
-    public ResponseEntity<?> proxyCombo(
-            @RequestParam String code,
-            HttpServletRequest request) {
         
-        String externalUrl = EXTERNAL_API_BASE + "/SCO/jqGridJSON.json?ServiceName=ict.sys.code.combo-service&find=1";
+        // 모듈 경로 결정 (기본값: SMZ)
+        String module = "SMZ";
+        if (allParams.containsKey("module")) {
+            module = allParams.get("module");
+        }
+        
+        String externalUrl = EXTERNAL_API_BASE + "/" + module + "/jqGridJSON.json?ServiceName=" + ServiceName;
+        if (transitionName != null) {
+            externalUrl += "&" + transitionName + "=1";
+        }
         
         HttpSession session = request.getSession();
         
         try {
             HttpHeaders headers = createHeaders();
-            MultiValueMap<String, String> body = createComboRequestBody(code, session);
+            MultiValueMap<String, String> body = createGenericRequestBodyFromRequest(ServiceName, transitionName, request, session);
             
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
             
@@ -157,115 +210,73 @@ public class ProxyController {
     }
 
     /**
-     * Init Service 요청 바디 생성
+     * Request에서 직접 form 데이터를 추출하여 요청 바디 생성
      */
-    private MultiValueMap<String, String> createInitRequestBody(HttpSession session) {
+    private MultiValueMap<String, String> createGenericRequestBodyFromRequest(
+            String serviceName, 
+            String transitionName, 
+            HttpServletRequest request,
+            HttpSession session) {
+        
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         
-        // Session Data
+        // Session Data from SessionUtil
         String userId = (String) session.getAttribute("GW_USER_ID");
         String pgmId = (String) session.getAttribute("GW_PGM_ID");
         String langCd = (String) session.getAttribute("GW_LANG_CD");
-        String lineCd = (String) session.getAttribute("GW_LINE_CD");
         String clientIp = (String) session.getAttribute("GW_CLIENT_IP");
         String plantCd = (String) session.getAttribute("GW_PLANT_CD");
-        String mnuId = (String) session.getAttribute("MNU_ID");
+        String lineCd = (String) session.getAttribute("GW_LINE_CD");
+        String empNo = (String) session.getAttribute("GW_EMP_NO");
+        String deptCd = (String) session.getAttribute("GW_DEPT_CD");
+        String roleCd = (String) session.getAttribute("GW_ROLE_CD");
 
-        // 기본값 설정
+        // 기본값 설정 (SessionUtil의 Mock 데이터와 일치)
         if (userId == null) userId = "99991201";
-        if (pgmId == null) pgmId = "SMZ7010";
-        if (langCd == null) langCd = "ko";
-        if (lineCd == null) lineCd = "";
-        if (clientIp == null) clientIp = "127.0.0.1";
+        if (pgmId == null) pgmId = "SI0003";
+        if (langCd == null) langCd = "KO";
+        if (clientIp == null) clientIp = "10.2.110.216";
         if (plantCd == null) plantCd = "1000";
-        if (mnuId == null) mnuId = "M000001460";
+        if (lineCd == null) lineCd = "";
+        if (empNo == null) empNo = "99991201";
+        if (deptCd == null) deptCd = "";
+        if (roleCd == null) roleCd = "MES_INQ_ROLE,MB_TEMP,ITSM";
 
+        // 기본 GW 파라미터 추가 (SessionUtil 데이터 사용)
         body.add("USER_ID", userId);
         body.add("PGM_ID", pgmId);
-        body.add("MNU_ID", mnuId);
         body.add("LANG_CD", langCd);
         body.add("LINE_CD", lineCd);
-        body.add("gwLoginId", userId);
-        body.add("gwServiceName", "ict.sys.init-service");
-        body.add("gwLanguageCd", langCd);
-        body.add("gwClientIp", clientIp);
-        body.add("gwPgmId", pgmId);
-        body.add("gwPlantCd", plantCd);
-
-        return body;
-    }
-
-    /**
-     * Tag Search Service 요청 바디 생성
-     */
-    private MultiValueMap<String, String> createTagSearchRequestBody(HttpSession session) {
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("EMP_NO", empNo);
+        body.add("DEPT_CD", deptCd);
+        body.add("ROLE_CD", roleCd);
+        body.add("PLANT_CD", plantCd);
+        body.add("CLIENT_IP", clientIp);
         
-        // Session Data
-        String userId = (String) session.getAttribute("GW_USER_ID");
-        String pgmId = (String) session.getAttribute("GW_PGM_ID");
-        String langCd = (String) session.getAttribute("GW_LANG_CD");
-        String clientIp = (String) session.getAttribute("GW_CLIENT_IP");
-        String plantCd = (String) session.getAttribute("GW_PLANT_CD");
-
-        // 기본값 설정
-        if (userId == null) userId = "99991201";
-        if (pgmId == null) pgmId = "SMZ7010";
-        if (langCd == null) langCd = "ko";
-        if (clientIp == null) clientIp = "127.0.0.1";
-        if (plantCd == null) plantCd = "1000";
-
-        body.add("SEARCH_TY", "SCR");
-        body.add("FAC_CD", "A10");
-        body.add("PROC_CD", "");
-        body.add("ASSET_CD", "");
-        body.add("MON_TREE_CD", "1760");
-        body.add("MON_SCR_CD", "1803");
-        body.add("TAG_ID", "");
-        body.add("TAG_NM", "");
-        body.add("LINK_TAG_HIST", "변경이력");
-        body.add("LINK_BIZ_SCR", "화면별관리");
-        body.add("LINK_BIZ_TAG", "업무별관리");
-        body.add("LINK_TAG_MACRO", "집계관리");
-        body.add("LINK_TAG_EVENT", "이벤트/알람관리");
+        // GW 파라미터 추가
         body.add("gwLoginId", userId);
-        body.add("gwServiceName", "ict.sys.init-service");
+        body.add("gwServiceName", serviceName);
         body.add("gwLanguageCd", langCd);
         body.add("gwClientIp", clientIp);
         body.add("gwPgmId", pgmId);
         body.add("gwPlantCd", plantCd);
 
-        return body;
-    }
+        // Request 에서 모든 파라미터 추출
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            String key = entry.getKey();
+            String[] values = entry.getValue();
+            
+            if (!key.equals("ServiceName") && !key.equals(transitionName)) {
+                for (String value : values) {
+                    body.add(key, value);
+                }
+            }
+        }
 
-    /**
-     * Combo Service 요청 바디 생성
-     */
-    private MultiValueMap<String, String> createComboRequestBody(String code, HttpSession session) {
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        
-        // Session Data
-        String userId = (String) session.getAttribute("GW_USER_ID");
-        String pgmId = (String) session.getAttribute("GW_PGM_ID");
-        String langCd = (String) session.getAttribute("GW_LANG_CD");
-        String clientIp = (String) session.getAttribute("GW_CLIENT_IP");
-        String plantCd = (String) session.getAttribute("GW_PLANT_CD");
-
-        // 기본값 설정
-        if (userId == null) userId = "99991201";
-        if (pgmId == null) pgmId = "SMZ7010";
-        if (langCd == null) langCd = "ko";
-        if (clientIp == null) clientIp = "127.0.0.1";
-        if (plantCd == null) plantCd = "1000";
-
-        body.add("CODE", code);
-        body.add("gwKeyList", "{\"gwKeyList\":[{\"key\":\"CODE\"}]}");
-        body.add("gwLoginId", userId);
-        body.add("gwServiceName", "ict.sys.code.combo-service");
-        body.add("gwLanguageCd", langCd);
-        body.add("gwClientIp", clientIp);
-        body.add("gwPgmId", pgmId);
-        body.add("gwPlantCd", plantCd);
+        if (transitionName != null && !transitionName.isEmpty()) {
+            body.add(transitionName, "1");
+        }
 
         return body;
     }

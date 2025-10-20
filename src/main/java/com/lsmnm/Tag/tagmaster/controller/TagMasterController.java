@@ -23,15 +23,6 @@ public class TagMasterController {
     }
 
     /**
-     * GET /tag-master/bdp7070
-     * BDP7070.html 페이지를 띄우는 메서드
-     */
-    @GetMapping("/bdp7070")
-    public String bdp7070Page() {
-        return "BDP/BDP7070";
-    }
-
-    /**
      * POST /tag-master/init
      * 클라이언트에서 전송한 form data를 받아서 init-service 호출
      */
