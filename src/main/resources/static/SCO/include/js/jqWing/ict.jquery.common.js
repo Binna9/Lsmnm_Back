@@ -638,6 +638,11 @@ function fc_submit ( type, prmServiceNm, prmTransitionNm, prmParam, prmDataType,
 	var result = false;
 	isShowError = fc_setValue( isShowError, true );
 
+	// API 호출 직전에 세션 데이터 덮어쓰기
+	if (typeof window.overrideSessionData === 'function') {
+		window.overrideSessionData();
+	}
+
 	if ( fc_isNull( prmServiceNm ) ) {
 		fc_setError( '[Service Name]' + window.gwMessage.validate.nodefined );
 	} else {

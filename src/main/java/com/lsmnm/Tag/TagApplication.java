@@ -9,6 +9,4 @@ public class TagApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(TagApplication.class, args);
-	}
-
-}
+	}}

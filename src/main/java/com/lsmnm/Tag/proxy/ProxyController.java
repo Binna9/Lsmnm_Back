@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import java.util.Map;
 
 @RestController
@@ -44,106 +43,7 @@ public class ProxyController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-//
-//    /**
-//     * Init Service 프록시
-//     * POST /proxy/init
-//     */
-//    @PostMapping("/init")
-//    public ResponseEntity<?> proxyInit(@RequestParam(defaultValue = "1") String searchSysEnv, HttpServletRequest request) {
-//
-//        String externalUrl = EXTERNAL_API_BASE + "/SCO/jqGridJSON.json?ServiceName=ict.sys.init-service&searchSysEnv=" + searchSysEnv;
-//
-//        HttpSession session = request.getSession();
-//
-//        try {
-//            HttpHeaders headers = createHeaders();
-//            MultiValueMap<String, String> body = createInitRequestBody(session);
-//
-//            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-//
-//            ResponseEntity<String> response = restTemplate.postForEntity(externalUrl, requestEntity, String.class);
-//
-//            HttpHeaders responseHeaders = new HttpHeaders();
-//            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-//
-//            return ResponseEntity.status(response.getStatusCode())
-//                    .headers(responseHeaders)
-//                    .body(response.getBody());
-//
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("{\"error\": \"" + e.getMessage() + "\"}");
-//        }
-//    }
-//
-//    /**
-//     * Tag Master Service 프록시
-//     * POST /proxy/tags
-//     */
-//    @PostMapping("/tags")
-//    public ResponseEntity<?> proxyTags(
-//            @RequestBody(required = false) Map<String, Object> requestBody,
-//            HttpServletRequest request) {
-//
-//        String externalUrl = EXTERNAL_API_BASE + "/SMZ/jqGridJSON.json?ServiceName=smz.tag.master-service&searchTagMst=1";
-//
-//        HttpSession session = request.getSession();
-//
-//        try {
-//            HttpHeaders headers = createHeaders();
-//            MultiValueMap<String, String> body = createTagSearchRequestBody(session);
-//
-//            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-//
-//            ResponseEntity<String> response = restTemplate.postForEntity(externalUrl, requestEntity, String.class);
-//
-//            HttpHeaders responseHeaders = new HttpHeaders();
-//            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-//
-//            return ResponseEntity.status(response.getStatusCode())
-//                    .headers(responseHeaders)
-//                    .body(response.getBody());
-//
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("{\"error\": \"" + e.getMessage() + "\"}");
-//        }
-//    }
-//
-//    /**
-//     * Combo Service 프록시
-//     * POST /proxy/combo
-//     */
-//    @PostMapping("/combo")
-//    public ResponseEntity<?> proxyCombo(
-//            @RequestParam String code,
-//            HttpServletRequest request) {
-//
-//        String externalUrl = EXTERNAL_API_BASE + "/SCO/jqGridJSON.json?ServiceName=ict.sys.code.combo-service&find=1";
-//
-//        HttpSession session = request.getSession();
-//
-//        try {
-//            HttpHeaders headers = createHeaders();
-//            MultiValueMap<String, String> body = createComboRequestBody(code, session);
-//
-//            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-//
-//            ResponseEntity<String> response = restTemplate.postForEntity(externalUrl, requestEntity, String.class);
-//
-//            HttpHeaders responseHeaders = new HttpHeaders();
-//            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-//
-//            return ResponseEntity.status(response.getStatusCode())
-//                    .headers(responseHeaders)
-//                    .body(response.getBody());
-//
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("{\"error\": \"" + e.getMessage() + "\"}");
-//        }
-//    }
+
 
     /**
      * 범용 jqGridJSON 프록시 - fc_submit 함수에서 호출하는 API 처리
@@ -164,10 +64,16 @@ public class ProxyController {
             }
         }
         
-        // 모듈 경로 결정 (기본값: SMZ)
-        String module = "SMZ";
-        if (allParams.containsKey("module")) {
-            module = allParams.get("module");
+        // 모듈 경로 결정 - ServiceName에 따라 자동 설정
+        String module = "SCO"; // 기본값
+        if (ServiceName != null && !ServiceName.isEmpty()) {
+            if (ServiceName.contains("SMZ")) {
+                module = "SMZ";
+            } else if (ServiceName.contains("SCO")) {
+                module = "SCO";
+            } else if (ServiceName.contains("BDP")) {
+                module = "BDP";
+            }
         }
         
         String externalUrl = EXTERNAL_API_BASE + "/" + module + "/jqGridJSON.json?ServiceName=" + ServiceName;
@@ -175,109 +81,108 @@ public class ProxyController {
             externalUrl += "&" + transitionName + "=1";
         }
         
-        HttpSession session = request.getSession();
-        
         try {
-            HttpHeaders headers = createHeaders();
-            MultiValueMap<String, String> body = createGenericRequestBodyFromRequest(ServiceName, transitionName, request, session);
+            HttpHeaders headers = createHeaders(request);
+            
+            // 클라이언트에서 보낸 모든 파라미터를 그대로 전달
+            MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+                String key = entry.getKey();
+                String[] values = entry.getValue();
+                for (String value : values) {
+                    body.add(key, value);
+                }
+            }
             
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
             
             ResponseEntity<String> response = restTemplate.postForEntity(externalUrl, requestEntity, String.class);
+            
+            // 응답 내용 로깅 (디버깅용)
+            System.out.println("Response Status: " + response.getStatusCode());
+            System.out.println("Response Headers: " + response.getHeaders());
+            System.out.println("Response Body Length: " + (response.getBody() != null ? response.getBody().length() : "null"));
+            
+            // 응답 본문이 null이거나 비어있는 경우 처리
+            String responseBody = response.getBody();
+            if (responseBody == null || responseBody.trim().isEmpty()) {
+                System.err.println("Empty response body received");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"is_success\": false, \"exception_message\": \"Empty response from server\"}");
+            }
+            
+            // 응답이 HTML인지 확인 (오류 페이지일 가능성)
+            if (responseBody.trim().startsWith("<")) {
+                System.err.println("HTML response received instead of JSON: " + responseBody.substring(0, Math.min(200, responseBody.length())));
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"is_success\": false, \"exception_message\": \"Server returned HTML instead of JSON\"}");
+            }
             
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.setContentType(MediaType.APPLICATION_JSON);
             
             return ResponseEntity.status(response.getStatusCode())
                     .headers(responseHeaders)
-                    .body(response.getBody());
+                    .body(responseBody);
                     
         } catch (Exception e) {
+            // 오류 로깅
+            System.err.println("Proxy Error: " + e.getMessage());
+            e.printStackTrace();
+            
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+                    .body("{\"is_success\": false, \"exception_message\": \"" + e.getMessage().replace("\"", "\\\"") + "\"}");
         }
     }
 
     /**
-     * 공통 헤더 생성
+     * 공통 헤더 생성 - 원본 요청과 동일한 헤더 설정
      */
-    private HttpHeaders createHeaders() {
+    private HttpHeaders createHeaders(HttpServletRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        
+        // 원본 요청과 동일한 헤더 설정
         headers.set("Origin", "https://mesdev.lsmnm.com");
-        headers.set("Referer", "https://mesdev.lsmnm.com/SMZ/SMZ7010.do");
-        return headers;
-    }
-
-    /**
-     * Request에서 직접 form 데이터를 추출하여 요청 바디 생성
-     */
-    private MultiValueMap<String, String> createGenericRequestBodyFromRequest(
-            String serviceName, 
-            String transitionName, 
-            HttpServletRequest request,
-            HttpSession session) {
         
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        
-        // Session Data from SessionUtil
-        String userId = (String) session.getAttribute("GW_USER_ID");
-        String pgmId = (String) session.getAttribute("GW_PGM_ID");
-        String langCd = (String) session.getAttribute("GW_LANG_CD");
-        String clientIp = (String) session.getAttribute("GW_CLIENT_IP");
-        String plantCd = (String) session.getAttribute("GW_PLANT_CD");
-        String lineCd = (String) session.getAttribute("GW_LINE_CD");
-        String empNo = (String) session.getAttribute("GW_EMP_NO");
-        String deptCd = (String) session.getAttribute("GW_DEPT_CD");
-        String roleCd = (String) session.getAttribute("GW_ROLE_CD");
-
-        // 기본값 설정 (SessionUtil의 Mock 데이터와 일치)
-        if (userId == null) userId = "99991201";
-        if (pgmId == null) pgmId = "SI0003";
-        if (langCd == null) langCd = "KO";
-        if (clientIp == null) clientIp = "10.2.110.216";
-        if (plantCd == null) plantCd = "1000";
-        if (lineCd == null) lineCd = "";
-        if (empNo == null) empNo = "99991201";
-        if (deptCd == null) deptCd = "";
-        if (roleCd == null) roleCd = "MES_INQ_ROLE,MB_TEMP,ITSM";
-
-        // 기본 GW 파라미터 추가 (SessionUtil 데이터 사용)
-        body.add("USER_ID", userId);
-        body.add("PGM_ID", pgmId);
-        body.add("LANG_CD", langCd);
-        body.add("LINE_CD", lineCd);
-        body.add("EMP_NO", empNo);
-        body.add("DEPT_CD", deptCd);
-        body.add("ROLE_CD", roleCd);
-        body.add("PLANT_CD", plantCd);
-        body.add("CLIENT_IP", clientIp);
-        
-        // GW 파라미터 추가
-        body.add("gwLoginId", userId);
-        body.add("gwServiceName", serviceName);
-        body.add("gwLanguageCd", langCd);
-        body.add("gwClientIp", clientIp);
-        body.add("gwPgmId", pgmId);
-        body.add("gwPlantCd", plantCd);
-
-        // Request 에서 모든 파라미터 추출
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-            String key = entry.getKey();
-            String[] values = entry.getValue();
-            
-            if (!key.equals("ServiceName") && !key.equals(transitionName)) {
-                for (String value : values) {
-                    body.add(key, value);
-                }
+        // Referer 헤더 동적 설정 - ServiceName에 따라 올바른 경로 설정
+        String refererUrl = "https://mesdev.lsmnm.com/SCO/SCO7070.do";
+        String serviceName = request.getParameter("ServiceName");
+        if (serviceName != null && !serviceName.isEmpty()) {
+            if (serviceName.contains("SMZ")) {
+                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ7070.do";
+            } else if (serviceName.contains("SCO")) {
+                refererUrl = "https://mesdev.lsmnm.com/SCO/SCO7070.do";
+            } else if (serviceName.contains("BDP")) {
+                refererUrl = "https://mesdev.lsmnm.com/BDP/BDP7070.do";
             }
         }
-
-        if (transitionName != null && !transitionName.isEmpty()) {
-            body.add(transitionName, "1");
+        headers.set("Referer", refererUrl);
+        
+        headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36");
+        headers.set("Accept", "application/json, text/javascript, */*; q=0.01");
+        headers.set("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7");
+        // Accept-Encoding을 명시적으로 설정하지 않음 (압축 문제 방지)
+        headers.set("Cache-Control", "no-cache");
+        headers.set("Pragma", "no-cache");
+        headers.set("X-Requested-With", "XMLHttpRequest");
+        
+        // sec-ch-ua 헤더들 (Chrome 보안 헤더)
+        headers.set("sec-ch-ua", "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"");
+        headers.set("sec-ch-ua-mobile", "?0");
+        headers.set("sec-ch-ua-platform", "\"Windows\"");
+        headers.set("sec-fetch-dest", "empty");
+        headers.set("sec-fetch-mode", "cors");
+        headers.set("sec-fetch-site", "same-origin");
+        
+        // 쿠키 헤더 설정 - 클라이언트 쿠키가 있으면 사용, 없으면 기본값
+        String cookieHeader = request.getHeader("Cookie");
+        if (cookieHeader == null || cookieHeader.isEmpty()) {
+            cookieHeader = "JSESSIONID=B7Tj96XAD_3u45F8qUvRADP7l0gmoVzDTR53BG4Q.SCO_01; USERID=; LANG_CD=; LOGIN_CERT_TYPE=";
         }
-
-        return body;
+        headers.set("Cookie", cookieHeader);
+        
+        return headers;
     }
 }

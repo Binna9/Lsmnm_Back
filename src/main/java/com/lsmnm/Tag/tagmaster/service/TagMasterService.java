@@ -29,8 +29,9 @@ public class TagMasterService {
     /**
      * 클라이언트에서 전송한 form data를 받아서 init-service 호출
      */
-    public String callInitService(InitServiceRequest request) {
-        String url = scoUrl + "?ServiceName=" + init + "&ScreenAuthority=" + 
+    public String callInitService(InitServiceRequest request ) {
+
+        String url = scoUrl + "?ServiceName=" + init + "&ScreenAuthority=" +
                     (request.getSearchScreenAuthority() != null ? request.getSearchScreenAuthority() : "1");
 
         try {
@@ -66,6 +67,7 @@ public class TagMasterService {
      * 클라이언트에서 전송한 form data를 받아서 combo-service 호출
      */
     public String callComboService(ComboServiceRequest request) {
+
         String url = scoUrl + "?ServiceName=" + combo + "&find=1";
 
         try {
@@ -98,6 +100,7 @@ public class TagMasterService {
      * 클라이언트에서 전송한 form data를 받아서 search-service 호출
      */
     public String callSearchService(SearchServiceRequest request) {
+
         String url = smzUrl + "?ServiceName=smz.tag.master-service&searchTagMst=1";
 
         try {

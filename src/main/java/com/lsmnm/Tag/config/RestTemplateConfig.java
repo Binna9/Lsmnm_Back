@@ -19,6 +19,7 @@ public class RestTemplateConfig {
         
         RestTemplate restTemplate = new RestTemplate(factory);
         
+        // UTF-8 인코딩 설정
         restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
         
         return restTemplate;
