@@ -1,0 +1,134 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<%@ include file="./include/include.jsp"%>
+<title>Alarm Log</title>
+<script type="text/javascript">
+//*********************************************************************************************
+// ********** Declare public variable
+//*********************************************************************************************
+	var gridAlarmLog, gridAlarmLogId;
+	var gridAlarmLogUser, gridAlarmLogIdUser;
+
+//*********************************************************************************************
+// ********** Function Ready Section
+//*********************************************************************************************
+    $(document).ready(function () {
+    	f_initSreen();
+    	f_initSearchForm();
+     	f_initContents();
+        f_lastProc();
+    }); // end of ready
+
+//*********************************************************************************************
+// ********** initialize screen Section
+//*********************************************************************************************
+    function f_initSreen() {
+    	serviceName = 'ict.screen.master.alarm-service';
+	}; // end of f_initSreen
+
+//*********************************************************************************************
+// ********** Initialize Search Condition Section
+//*********************************************************************************************
+ 	function f_initSearchForm() {
+ 		fc_makeSearch( '', 'ALARM_LOG', '' );
+	}; // end of f_initSearchForm
+
+//*********************************************************************************************
+// ********** Initialize data Section
+//*********************************************************************************************
+    function f_initContents () {
+    	gridAlarmLog   = fc_makeGrid( 'divAlarmLog', 'search', 'ALARM_LOG', '', false );
+    	gridAlarmLogId = gridAlarmLog.getGridId();
+
+    	gridAlarmLogUser = fc_makeGrid( 'divAlarmLogUser', 'search', 'ALARM_LOG_USER', '', false );
+    	gridAlarmLogIdUser = gridAlarmLogUser.getGridId();
+
+    	fc_makeSplitter( 'divMain', '80%', '20%', 'V' );
+
+	}; // end of f_initContents
+
+//*********************************************************************************************
+// ********** Last Process Job
+//*********************************************************************************************
+    function f_lastProc() {
+   		fc_setInputVal('ALARM_DTM_STA',fc_calcDate(fc_getNow(),-2));
+    	fc_setInputVal('ALARM_DTM_END',fc_calcDate(fc_getNow(), 1));
+
+		fc_lastProc();
+
+    	//fc_setInputVal('PLANT_CD'	,fc_getSessionItem( 'GW_PLANT_CD'));
+		fc_setInputVal('PLANT_CD', fc_getUserPlantCd());
+
+		//클릭이벤트
+		fc_setGridBindEvent(gridAlarmLogId, "rowclick", f_searchDetail);
+
+    }; // end of f_lastProc
+
+//*********************************************************************************************
+// ********** Screen Button Event Section
+//*********************************************************************************************
+    function f_search() {
+    	fc_addParamForm( 'divSearchCondition' );
+    	fc_searchGrid( [ { gridId: gridAlarmLogId, resultKey: 'RK_ALARM_LOG' } ], serviceName, 'searchAlarmLog' );
+    }; // end of f_search
+
+    function f_save() {
+     	fc_addParamForm( 'divSearchCondition' );
+    	fc_saveGrid( [ gridAlarmLogId ], '', serviceName, 'saveAlarm', null, null, null, f_saveAfter );
+    }; // end of f_save
+
+    function f_saveAfter () {
+    }; // end of f_saveAfter
+
+    function f_delete() {
+    	fc_deleteGrid( [ gridAlarmLogId ], '', serviceName, 'deleteAlarm' );
+    }; // end of f_delete
+
+    function f_searchDetail(event) {
+		var args = event.args;
+		var rowindex = args.rowindex;
+
+		if (rowindex < 0) return;
+
+		var alarm_id = fc_getCellData(gridAlarmLogId, rowindex, "ALARM_ID");
+		var alarm_dtm = fc_getCellData(gridAlarmLogId, rowindex, "ALARM_DTM");
+
+		f_searchHistory(alarm_id, alarm_dtm);
+	};
+
+	function f_searchHistory(id, dtm) {
+		if(fc_isNull(id))
+			return;
+		fc_addParam("ALARM_ID", id);
+		fc_addParam("ALARM_DTM", dtm);
+		fc_searchGrid([{gridId: gridAlarmLogIdUser, resultKey: "RK_ALARM_LOG_USER"}], serviceName, "searchAlarmLogUser" );
+	};
+
+//*********************************************************************************************
+// ********** User Defined Function Section
+//*********************************************************************************************
+</script>
+</head>
+<body>
+	<div id="divContainer">
+		<div id="divTitle">
+			<%@ include file="./include/includeTitle.jsp" %>
+		</div>
+		<div id="divSearchCondition">
+		</div>
+		<div id="divContents">
+			<div id='divMain'>
+				<div id="divAlarmLog"></div>
+				<div id="divAlarmLogUser"></div>
+			</div>
+		</div>
+
+	</div>
+	<div id="divMessage">
+		<%@ include file="./include/includeMessage.jsp" %>
+	</div>
+</body>
+</html>

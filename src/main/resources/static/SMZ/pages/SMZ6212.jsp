@@ -1,0 +1,158 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<%@ include file="./include/include.jsp"%>
+<title>Chart Scale</title>
+<script type="text/javascript">
+//*********************************************************************************************
+// ********** Declare public variable
+//*********************************************************************************************
+	var gridChartScale, gridChartScaleId;
+	var P_TAG_CODE, P_TAG_NAME, P_TAG_TP, P_YMIN, P_YMAX;
+	var gChart;
+
+//*********************************************************************************************
+// ********** Function Ready Section
+//*********************************************************************************************
+    $(document).ready(function () {
+    	f_initSreen();
+    	f_initContents();
+        f_lastProc();
+    }); // end of ready
+
+//*********************************************************************************************
+// ********** initialize screen Section
+//*********************************************************************************************
+    function f_initSreen() {
+    	P_TAG_CODE = parent.f_getTagCode();
+    	P_TAG_NAME = parent.f_getTagName();
+    	P_TAG_TP = parent.f_getTagTp();
+    	P_YMIN = parent.f_getChartMin();
+    	P_YMAX = parent.f_getChartMax();
+    	gChart = parent.f_getChart();
+    	
+    	//console.log('## gChart ', gChart);
+    	
+	}; // end of f_initSreen
+
+//*********************************************************************************************
+// ********** Initialize data Section
+//*********************************************************************************************
+    function f_initContents () {
+    	gridChartScale   = fc_makeGrid( 'divChartScale', 'insert', 'CHART_SCALE', '', false );
+    	gridChartScaleId = gridChartScale.getGridId();
+    	
+    	fc_setColProp( gridChartScaleId, 'LINE_C_BEF', 'cellsrenderer', cellsrenderer );
+    	fc_setColProp( gridChartScaleId, 'LINE_C_AFT', 'cellsrenderer', cellsrenderer );
+    	
+    	
+    	$("#"+ gridChartScaleId).on("cellclick", function (event) {
+		    var args = event.args;
+		    var rowBoundIndex = args.rowindex;
+		    var dataField = args.datafield;
+		    var rowData = fc_getRowData(gridChartScaleId, rowBoundIndex);
+		    
+			if ( dataField === 'LINE_C_AFT') {
+				fc_linkagePopup( "SMZ6215", [  { name: "openUrl"			, value:'SMZ6215' 	},
+                    						   { name: "openGridRowIndex"	, value: rowBoundIndex	},
+                    						   { name: "lineColor"			, value: rowData.LINE_C_BEF.replace('#','')	},
+                 							], '370', '410', true );
+			}
+		});
+    	
+    	
+		
+    		
+	}; // end of f_initContents
+
+	//*********************************************************************************************
+// ********** Last Process Job
+//*********************************************************************************************
+    function f_lastProc() {
+		fc_lastProc();
+
+		
+		
+		//for(var i=P_TAG_CODE.length-1; i>=0; i--) {
+		for(var i=gChart.series.length-1; i>=0; i--) {
+    		var emptyRow = new Object();
+        	emptyRow[ 'JQX_RS' ] = fc_getGridFlag( 'A' );
+        	emptyRow[ 'JQX_CB' ] = false;
+        	emptyRow[ 'TAG_CODE' ] = P_TAG_CODE[i];
+        	emptyRow[ 'TAG_NAME' ] = P_TAG_NAME[i];
+        	emptyRow[ 'ORD_NO_BEF' ] = i+1;
+        	emptyRow[ 'Y_MIN_BEF' ] = P_YMIN[i];
+        	emptyRow[ 'Y_MAX_BEF' ] = P_YMAX[i];
+        	emptyRow[ 'LINE_T_BEF' ] = gChart.series[i].options.lineWidth;
+        	emptyRow[ 'LINE_G_BEF' ] = gChart.series[i].options.dashStyle;
+        	emptyRow[ 'LINE_C_BEF' ] = gChart.series[i].color;
+        	emptyRow[ 'TAG_TP' ] = P_TAG_TP[i];
+
+        	fc_addRowData( gridChartScaleId, null, emptyRow,0 );
+    	}
+		
+		
+		
+    }; // end of f_lastProc
+
+//*********************************************************************************************
+// ********** Screen Button Event Section
+//*********************************************************************************************
+    function f_cust1() {
+    	
+		// 차트 순서조정
+     	var gridOrdChk = false;
+		var gridData = fc_getRowsData(gridChartScaleId);
+		for(var i=0; i<gridData.length; i++) {
+			if(gridData[i].ORD_NO_AFT != undefined && gridData[i].ORD_NO_AFT != '' &&  gridData[i].ORD_NO_BEF != gridData[i].ORD_NO_AFT){
+				gridOrdChk = true;
+				break;
+			}
+		}
+		
+		if(gridOrdChk){
+			$("#"+gridChartScaleId).jqxGrid('sortby', 'ORD_NO_AFT', 'asc');	
+		}
+		
+		parent.f_setChartAttribute(fc_getRowsData(gridChartScaleId));
+    	f_closePopup();
+    }; // end of f_cust1
+
+
+    function f_closePopup() {
+		var parentPop = parent.window.popWin;
+		parentPop.closePop();
+    }; // end of f_close
+    
+
+//*********************************************************************************************
+// ********** User Defined Function Section
+//*********************************************************************************************
+	function f_receiveData(lineColor, openGridRowIndex){
+		fc_setCellData(gridChartScaleId, openGridRowIndex, 'LINE_C_AFT', lineColor);
+    }
+	
+	var cellsrenderer =	function(row, column, value, defaultHtml, columnSettings, record) {
+		
+    	var element = $(defaultHtml);
+        element.css({ 'background-color': value });
+        return element[0].outerHTML;
+    }
+</script>
+</head>
+<body>
+	<div id="divContainer">
+		<div id="divTitle">
+			<%@ include file="./include/includeTitle.jsp" %>
+		</div>
+		<div id="divContents">
+			<div id="divChartScale"></div>
+		</div>
+	</div>
+	<div id="divMessage">
+		<%@ include file="./include/includeMessage.jsp" %>
+	</div>
+</body>
+</html>

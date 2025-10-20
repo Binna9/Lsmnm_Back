@@ -50,9 +50,7 @@ public class ProxyController {
      * POST /proxy/init
      */
     @PostMapping("/init")
-    public ResponseEntity<?> proxyInit(
-            @RequestParam(defaultValue = "1") String searchSysEnv,
-            HttpServletRequest request) {
+    public ResponseEntity<?> proxyInit(@RequestParam(defaultValue = "1") String searchSysEnv, HttpServletRequest request) {
         
         String externalUrl = EXTERNAL_API_BASE + "/SCO/jqGridJSON.json?ServiceName=ict.sys.init-service&searchSysEnv=" + searchSysEnv;
         

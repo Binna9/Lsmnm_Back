@@ -1,0 +1,443 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<%@ include file="./include/include.jsp"%>
+<title>Chart Bookmark</title>
+<script src="/SMZ/include/js/smz.common.extend.js"></script>
+<script type="text/javascript">
+	//*********************************************************************************************
+	// ********** Declare public variable
+	//*********************************************************************************************
+	var gridChartMaster, gridChartMasterId;
+	var gridChartDetail, gridChartDetailId;
+	var P_TAG_CODE, P_TAG_NAME, P_TAG_TP, P_YMIN, P_YMAX, P_USER_FORMULA;
+	var gChart;
+	var vFAV_MASTER_CD = "";
+	
+	//*********************************************************************************************
+	// ********** Function Ready Section
+	//*********************************************************************************************
+	$(document).ready(function() {
+		f_initSreen();
+		f_initSearchForm();
+		f_initContents();
+		f_lastProc();
+	}); // end of ready
+	//*********************************************************************************************
+	//********** initialize screen Section
+	//*********************************************************************************************
+	function f_initSreen() {
+		serviceName = 'SMZ6216-service';
+	}; // end of f_initSreen
+
+	//*********************************************************************************************
+	//********** Initialize Search Condition Section
+	//*********************************************************************************************
+	function f_initSearchForm() {
+		fc_makeDomGroup('divMaster_HEAD', 'formHeader', 'SMZ6216_MASTER_HEAD', '', true);
+		fc_makeDomGroup('divDetail_HEAD', 'formHeader', 'SMZ6216_DETAIL_HEAD', '', true);
+		
+		$('#MASTER_SAVE').bind('click', function (event) {
+			f_save_master();
+		}); 
+		$('#MASTER_DELETE').bind('click', function (event) {
+			f_delete_master();
+		}); 
+		
+		$('#DETAIL_ADD').bind('click', function (event) {
+			f_add_detail();
+		});
+		$('#DETAIL_SAVE').bind('click', function (event) {
+			f_save_detail();
+		}); 
+		$('#DETAIL_DELETE').bind('click', function (event) {
+			f_delete_detail();
+		}); 
+		
+	}; // end of f_initSearchForm
+	
+	//*********************************************************************************************
+	// ********** Initialize data Section
+	//*********************************************************************************************
+	function f_initContents() {
+		gridChartMaster = fc_makeGrid('divMaster_GRID', 'insert', 'FAVORITE_MASTER', '', false);
+		gridChartMasterId = gridChartMaster.getGridId();
+		gridChartMaster.setGridBindEvent( 'cellvaluechanged', f_search_detail );
+		
+		gridChartDetail = fc_makeGrid('divDetail_GRID', 'insert', 'FAVORITE_DETAIL', '', false);
+		gridChartDetailId = gridChartDetail.getGridId();
+		//fc_showAddRowButton(gridChartDetailId, false);
+		fc_showCopyRowButton(gridChartDetailId, false);
+		//fc_showDelRowButton(gridChartDetailId, false);
+		
+		fc_setColProp( gridChartDetailId, 'LINE_COLOR', 'cellsrenderer', cellsrenderer );
+		
+		
+		$("#"+ gridChartDetailId).on("cellclick", function (event) {
+		    var args = event.args;
+		    var rowBoundIndex = args.rowindex;
+		    var dataField = args.datafield;
+		    var rowData = fc_getRowData(gridChartDetailId, rowBoundIndex);
+		    
+			if ( dataField === 'LINE_COLOR') {
+				var vColor = rowData.LINE_COLOR;
+			    if(vColor == undefined){
+			    	vColor = "";
+			    }else{
+			    	vColor = vColor.replace('#','');
+			    }
+				
+				fc_linkagePopup( "SMZ6215", [  { name: "openUrl"			, value:'SMZ6215' 	},
+                    						   { name: "openGridRowIndex"	, value: rowBoundIndex	},
+                    						   { name: "lineColor"			, value: vColor	},
+                 							], '370', '410', true );
+			}
+						
+			
+		});
+		
+		$("#"+ gridChartDetailId).on('cellbeginedit', function (event){
+		    
+		    var args = event.args;
+		    var dataField = event.args.datafield;
+		    var rowBoundIndex = event.args.rowindex;
+		    var value = args.value;
+		    var oldvalue = args.oldvalue;
+		    var rowData = args.row;
+		    
+		    if ( dataField === 'TAG_ID') {
+		    	
+		    	var vTagTp = fc_getCellData( gridChartDetailId, rowBoundIndex, 'TAG_TP' );
+		    	// 구분이 Formula이면 TAG_ID 수정불가 
+		    	if(vTagTp == "U"){
+		    		alert("TAG 구분이 'Formula'이면 수정할 수 없습니다. ");
+		    		$("#"+gridChartDetailId).jqxGrid('endcelledit', 0, "TAG_ID", true);
+		    		return;
+		    	}
+		    	
+		    }
+		    
+		});
+		
+		$("#"+ gridChartDetailId).on('cellendedit', function (event){
+				    
+		    var args = event.args;
+		    var dataField = event.args.datafield;
+		    var rowBoundIndex = event.args.rowindex;
+		    var value = args.value;
+		    var oldvalue = args.oldvalue;
+		    var rowData = args.row;
+		    
+		    if ( dataField === 'TAG_TP') {
+		    	// 태그 구분이 Formula이면 일때 TAGID 자동입력
+		    	if(value.value == "U"){
+		    		var nDate = new Date();
+		    		var utagId = 'U'+nDate.format('yyyyMMddHHmmssSS');
+		    		fc_setCellData( gridChartDetailId, rowBoundIndex, 'TAG_ID' , utagId );
+		    		
+		    		//console.log('###  rowData ', rowData);
+		    		if(rowData.TAG_FORMUAL == undefined){
+		    			fc_setCellData( gridChartDetailId, rowBoundIndex, 'TAG_FORMUAL' , 'return ' );
+		    		}
+		    	
+		    	}
+		    }else if ( dataField === 'TAG_ID') {
+		    	var vTagTp = fc_getCellData( gridChartDetailId, rowBoundIndex, 'TAG_TP' );
+		    	
+		    	// 리얼&가상 태그이면 태그이름 자동 설정
+		    	if(vTagTp == "R" || vTagTp == "V" || vTagTp == "D"){
+		    		
+		    		var prmParam = {'TAG_TP':vTagTp, 'TAG_ID':value};
+		    		var result = fc_search( serviceName, 'searchTagNm', 'SMZ', prmParam );
+		    		
+		    		if ( result ) {
+		    			if(window.gwJsonResult.RK_DATA.length > 0){
+		    				fc_setCellData( gridChartDetailId, rowBoundIndex, 'TAG_NM' , window.gwJsonResult.RK_DATA[0].TAG_NM );
+		    			}
+		    				
+		    		}
+		    		
+		    	}
+		    }
+		    
+		});
+		
+		
+		$('#'+gridChartMasterId).jqxGrid({ columnsheight: 52}); 
+		
+		$("#DIVDOMGRP1").css("float", "right");
+		$("#DIVDOMGRP2").css("float", "right");
+		fc_makeSplitter('divMain', '32%', '68%', 'v');
+	}; // end of f_initContents
+
+	//*********************************************************************************************
+	// ********** Last Process Job
+	//*********************************************************************************************
+	function f_lastProc() {
+		fc_lastProc();
+		
+		$('#divCol_DETAIL_GROUP_VALUE').parent().css('padding-top','1px;');
+		
+		P_TAG_CODE = parent.f_getTagCode();
+    	P_TAG_NAME = parent.f_getTagName();
+    	P_TAG_TP = parent.f_getTagTp();
+    	P_YMIN = parent.f_getChartMin();
+    	P_YMAX = parent.f_getChartMax();
+    	P_USER_FORMULA = parent.f_getUserFomulaArr();
+    	gChart = parent.f_getChart();
+    	
+		setTimeout(function(){
+			f_search_master();
+		},100);
+	
+	}; // end of f_lastProc
+
+	//*********************************************************************************************
+	// ********** Screen Button Event Section
+	//*********************************************************************************************
+	function f_cust1() {
+
+	}; // end of f_cust1
+
+	function f_closePopup() {
+		var parentPop = parent.window.popWin;
+		parentPop.closePop();
+	}; // end of f_close
+	
+	function fc_addRowData( gridId, rowuid, rowData, index ) {
+		try {
+			var instance = $( '#' + gridId ).jqxGrid( 'getInstance' );
+			var gridRows = $('#' + gridId).jqxGrid('getrows');
+			
+			if(gridId == 'gridChartdetail' && gridRows.length >= 10 ){
+				fc_showMessageBox('Tag는 최대 10개까지 등록 가능합니다.' ,'I');
+				return false
+			}else{
+				instance.addrow( rowuid, rowData, index );
+				instance._getCheckIndex();
+				instance.endupdate();
+			}
+	
+		} catch ( e ) {
+			fc_getException( e );
+		};
+	}; // end of fc_addRowData
+	
+	//*********************************************************************************************
+	// ********** User Defined Function Section
+	//*********************************************************************************************
+	var chartColorArr = '#7cb5ec #434348 #90ed7d #f7a35c #8085e9 #f15c80 #e4d354 #2b908f #f45b5b #91e8e1'.split(' ')
+	function f_afterRowControl ( gridEvent ) {
+		
+		
+		var gridRows = $('#' + gridChartDetailId).jqxGrid('getrows');
+		var rowCount = gridRows.length;
+		
+		if(gridEvent.GRID_ID == gridChartMasterId){
+			if ( gridEvent.EVENT == 'I' && rowCount <= 10){
+				
+				if (rowCount < 10){
+					fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'JQX_CB' , true );	
+				}
+				fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'USER_ID' , fc_getSessionItem( 'GW_USER_ID') );
+				fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'FAV_TY'  , fc_getGirdLovValue( gridEvent.GRID_ID, 'FAV_TY', 'P') );
+			}
+		}else if(gridEvent.GRID_ID == gridChartDetailId){
+			if ( gridEvent.EVENT == 'I' && rowCount <= 10){
+				
+				if(fc_getInputVal('DETAIL_GROUP_CD') == ""){
+					alert("즐겨찾기 그룹을 선택해주세요.");
+					$('#'+gridEvent.GRID_ID).jqxGrid('deleterow', gridEvent.ROW_IDX);
+					
+				}else{
+					if (rowCount < 10){
+						fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'JQX_CB' , true );	
+					}
+					
+					if(!fc_isNull(fc_getCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'TAG_ID'))){
+						return false;
+					}
+					fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'FAV_MASTER_CD' , fc_getInputVal('DETAIL_GROUP_CD') );
+					fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'TAG_TP'  , fc_getGirdLovValue( gridEvent.GRID_ID, 'TAG_TP', 'R') );
+					fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'LINE_THICK'  , fc_getGirdLovValue( gridEvent.GRID_ID, 'LINE_THICK', '2') );
+					fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'LINE_STYLE'  , fc_getGirdLovValue( gridEvent.GRID_ID, 'LINE_STYLE', 'Solid') );	
+					
+					//2021.5.12추가
+					fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'TAG_ORDER' , rowCount+'' ); 
+					fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'LINE_COLOR' , chartColorArr[rowCount-1] ); 
+					
+				}
+				
+			}
+		}
+	}; // end of f_afterRowControl
+	
+	// 그룹 조회
+	function f_search_master(){
+		
+		fc_addParam( 'USER_ID', fc_getSessionItem( 'GW_USER_ID') );
+		fc_searchGrid( [ { gridId: gridChartMasterId, resultKey: 'RK_FAVORLITE_LIST' } ], serviceName, 'searchMaster' );
+	}
+	
+	// 그룹 저장
+	function f_save_master(){
+		fc_saveGrid( [ gridChartMasterId ], '', serviceName, 'saveMaster', '', '', '',  f_save_master_after);
+		
+	}
+	
+	function f_save_master_after(){
+		f_search_master();
+		f_menuTab3Refresh();
+	}
+	
+	// 그룹 삭제
+	function f_delete_master(){
+		fc_deleteGrid( [ gridChartMasterId ], '', serviceName, 'deleteMaster', '', '', '',  f_menuTab3Refresh);
+	}
+	
+	// TAG 상세 조회
+	function f_search_detail(event){
+		
+		var rowIndex =  event.args.rowindex;
+		
+		if(event.args.datafield == "JQX_CB" && event.args.value == true){
+			vFAV_MASTER_CD = fc_getCellData( gridChartMasterId, rowIndex, 'FAV_MASTER_CD' );
+			vFAV_MASTER_NM = fc_getCellData( gridChartMasterId, rowIndex, 'FAV_MASTER_NM' );
+			
+			fc_setInputVal('DETAIL_GROUP_CD', vFAV_MASTER_CD);
+			fc_setInputVal('DETAIL_GROUP_VALUE', vFAV_MASTER_NM);
+			
+			fc_addParam( 'FAV_MASTER_CD', vFAV_MASTER_CD );
+			fc_searchGrid( [ { gridId: gridChartDetailId, resultKey: 'RK_FAVORLITE_LIST' } ], serviceName, 'searchDetail' );	
+		}
+		
+		
+	}
+	
+	// TAG 추가
+	function f_add_detail(){
+		
+		if(P_TAG_CODE == undefined || P_TAG_CODE.length == 0){
+			alert("차트 조회 후 추가해주세요.");
+			return;
+		}
+		
+		var selMasterRow = fc_getSelectedRowData(gridChartMasterId);
+		if(selMasterRow.FAV_MASTER_CD == undefined){
+			alert("즐겨찾기 그룹을 선택해주세요.");
+			return;
+		}
+		//console.log('gChart', gChart);
+		
+		var gridRows = $('#' + gridChartDetailId).jqxGrid('getrows');
+		
+		var rowCount = gridRows.length;
+		//if(rowCount==undefined) rowCount = 0;
+		if(rowCount==undefined){
+			 rowCount = 0;	
+		}else if(rowCount + P_TAG_CODE.length > 10){
+			fc_showMessageBox('Tag는 최대 10개까지 등록 가능합니다.' ,'I');
+			return;	
+		}
+		
+		console.log('## P_TAG_TP', P_TAG_TP);
+		
+		var fromualIndex = 0;
+		for(var i=0; i<gChart.series.length; i++) {
+    		var emptyRow = new Object();
+    		
+    		emptyRow[ 'JQX_RS' ] = fc_getGridFlag( 'A' );
+        	emptyRow[ 'JQX_CB' ] = true;
+        	//emptyRow[ 'FAV_MASTER_CD' ] = selMasterRow.FAV_MASTER_CD;     //vFAV_MASTER_CD
+        	emptyRow[ 'FAV_MASTER_CD' ] = fc_getInputVal('DETAIL_GROUP_CD');     
+        	emptyRow[ 'TAG_ID' ] = P_TAG_CODE[i];
+        	emptyRow[ 'TAG_NM' ] = P_TAG_NAME[i];
+        	//emptyRow[ 'TAG_TP' ] = P_TAG_TP[i];
+        	emptyRow[ 'TAG_ORDER' ] = String(rowCount+1);
+        	emptyRow[ 'SCALE_MIN' ] = gChart.yAxis[i].min;
+        	emptyRow[ 'SCALE_MAX' ] = gChart.yAxis[i].max;
+        	//emptyRow[ 'LINE_THICK' ] = gChart.series[i].options.lineWidth;
+        	emptyRow[ 'LINE_STYLE' ] = gChart.series[i].options.dashStyle;
+        	emptyRow[ 'LINE_COLOR' ] = gChart.series[i].color;
+        	
+        	if(P_TAG_TP[i] == 'U'){
+        		emptyRow[ 'TAG_FORMUAL' ] = P_USER_FORMULA[fromualIndex];
+        		fromualIndex++;
+        	}
+        	
+        	fc_addRowData( gridChartDetailId, null, emptyRow, rowCount );
+        	
+        	fc_setCellData( gridChartDetailId, rowCount, 'TAG_TP' 	  , fc_getGirdLovValue( gridChartDetailId, 'TAG_TP', P_TAG_TP[i]) );
+        	fc_setCellData( gridChartDetailId, rowCount, 'LINE_THICK' , fc_getGirdLovValue( gridChartDetailId, 'LINE_THICK', gChart.series[i].options.lineWidth) );
+        	fc_setCellData( gridChartDetailId, rowCount, 'LINE_STYLE' , fc_getGirdLovValue( gridChartDetailId, 'LINE_STYLE', gChart.series[i].options.dashStyle) );
+        	
+        	rowCount++;
+    	}
+		
+	}
+	
+	// TAG 상세 저장
+	function f_save_detail(){
+		
+		var gridTagUserFomulaData = fc_getRowsData(gridChartDetailId);
+		
+		console.log('####  f_save_detail', gridTagUserFomulaData);
+		
+		fc_saveGrid( [ gridChartDetailId ], '', serviceName, 'saveDetail', '', '', '',  f_menuTab3Refresh);
+	}
+	
+	// TAG 상세 삭제
+	function f_delete_detail(){
+		fc_deleteGrid( [ gridChartDetailId ], '', serviceName, 'deleteDetail', '', '', '',  f_menuTab3Refresh);
+	}
+	
+	// callback 색상팝업 
+	function f_receiveData(lineColor, openGridRowIndex){
+		fc_setCellData(gridChartDetailId, openGridRowIndex, 'LINE_COLOR', lineColor);
+		//fc_setCellData(gridChartDetailId, openGridRowIndex, 'JQX_CB', true);
+		//fc_setCellData(gridChartDetailId, openGridRowIndex, 'JQX_RS', 'U');
+		
+    }
+	
+	function f_menuTab3Refresh(){
+		parent.menuTab3Refresh();
+	}
+	
+	// 그리드 셀 색상 변경
+	var cellsrenderer =	function(row, column, value, defaultHtml, columnSettings, record) {
+		
+    	var element = $(defaultHtml);
+        element.css({ 'background-color': value });
+        return element[0].outerHTML;
+    }
+	
+	
+	
+</script>
+</head>
+<body>
+	<div id="divContainer">
+		<div id="divTitle">
+			<%@ include file="./include/includeTitle.jsp"%>
+		</div>
+		<div id="divContents">
+			<div id="divMain" style="padding-right: 1px;">
+				<div id="divMaster">
+					<div id='divMaster_HEAD' style='width: 100%; height: auto; min-height: 30px' grptype='group' class='contents-float-line'></div>
+					<div id='divMaster_GRID' style='width: 100%; height: calc(100% - 68px)'></div>
+				</div>
+				<div id="divDetail">
+					<div id='divDetail_HEAD' style='width: 100%; height: auto; min-height: 30px' grptype='group' class='contents-float-line'></div>
+					<div id='divDetail_GRID' style='width: 100%; height: calc(100% - 68px)'></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="divMessage">
+		<%@ include file="./include/includeMessage.jsp"%>
+	</div>
+</body>
+</html>

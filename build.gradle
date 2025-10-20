@@ -6,7 +6,6 @@ plugins {
 
 group = 'com.lsmnm'
 version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
 
 java {
 	toolchain {
@@ -18,26 +17,30 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+
+
 }
 
 repositories {
 	mavenCentral()
-	maven { url 'https://repo1.maven.org/maven2/' }
-	mavenLocal()
-	flatDir {
-		dirs "libs"
-	}
 }
 
 dependencies {
 
+	// ✅ Spring Boot
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
-	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// ✅ Mybatis
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
+
+	// ✅ Lombok
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// ✅ Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

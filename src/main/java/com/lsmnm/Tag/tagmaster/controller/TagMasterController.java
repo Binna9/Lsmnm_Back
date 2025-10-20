@@ -1,16 +1,18 @@
 package com.lsmnm.Tag.tagmaster.controller;
 
+import com.lsmnm.Tag.tagmaster.dto.ComboServiceRequest;
+import com.lsmnm.Tag.tagmaster.dto.InitServiceRequest;
+import com.lsmnm.Tag.tagmaster.dto.SearchServiceRequest;
 import com.lsmnm.Tag.tagmaster.service.TagMasterService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
 
-@RestController
+@Controller
 @RequestMapping("/tag-master")
 public class TagMasterController {
 
@@ -21,15 +23,22 @@ public class TagMasterController {
     }
 
     /**
-     * POST /api/init
+     * GET /tag-master/bdp7070
+     * BDP7070.html 페이지를 띄우는 메서드
+     */
+    @GetMapping("/bdp7070")
+    public String bdp7070Page() {
+        return "BDP/BDP7070";
+    }
+
+    /**
+     * POST /tag-master/init
+     * 클라이언트에서 전송한 form data를 받아서 init-service 호출
      */
     @PostMapping("/init")
-    public ResponseEntity<String> initJsonGrid(
-            @RequestParam(defaultValue = "1") String searchScreenAuthority,
-            HttpServletRequest request) {
-        
-        HttpSession session = request.getSession();
-        String result = tagMasterService.callInitService(searchScreenAuthority, session);
+    @ResponseBody
+    public ResponseEntity<String> initJsonGrid(@ModelAttribute InitServiceRequest request) {
+        String result = tagMasterService.callInitService(request);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
@@ -40,15 +49,13 @@ public class TagMasterController {
     }
 
     /**
-     * POST /api/combo
+     * POST /tag-master/combo
+     * 클라이언트에서 전송한 form data를 받아서 combo-service 호출
      */
     @PostMapping("/combo")
-    public ResponseEntity<String> comboJsonGrid(
-            @RequestParam String code,
-            HttpServletRequest request) {
-        
-        HttpSession session = request.getSession();
-        String result = tagMasterService.callComboService(code, session);
+    @ResponseBody
+    public ResponseEntity<String> comboJsonGrid(@ModelAttribute ComboServiceRequest request) {
+        String result = tagMasterService.callComboService(request);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
@@ -59,13 +66,13 @@ public class TagMasterController {
     }
 
     /**
-     * POST /api/search
+     * POST /tag-master/search
+     * 클라이언트에서 전송한 form data를 받아서 search-service 호출
      */
     @PostMapping("/search")
-    public ResponseEntity<String> searchJsonGrid(HttpServletRequest request) {
-
-        HttpSession session = request.getSession();
-        String result = tagMasterService.callSearchService(session);
+    @ResponseBody
+    public ResponseEntity<String> searchJsonGrid(@ModelAttribute SearchServiceRequest request) {
+        String result = tagMasterService.callSearchService(request);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
