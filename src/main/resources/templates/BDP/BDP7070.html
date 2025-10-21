@@ -23,140 +23,14 @@
 
         // 프레임워크 초기화 완료 후 세션 데이터 덮어쓰기 (여러 타이밍에 실행)
         setTimeout(function() {
-            // 전역 변수 초기화
-            initializeGlobalVariables();
-
-            // 다국어 키값들을 한글로 설정
-            window.gwMultiLangItem['EVENT_RECV_TY'] = { CONTENTS: '이벤트수신유형' };
-            window.gwMultiLangItem['TAG_GRP'] = { CONTENTS: 'Tag그룹' };
-            window.gwMultiLangItem['TAG_NM'] = { CONTENTS: 'Tag명' };
-            window.gwMultiLangItem['EVENT_TY'] = { CONTENTS: '이벤트유형' };
-            window.gwMultiLangItem['LINK_PGM'] = { CONTENTS: '링크프로그램' };
-            window.gwMultiLangItem['COND'] = { CONTENTS: '판단기준' };
-            window.gwMultiLangItem['E'] = { CONTENTS: '이벤트구분' };
-
-            // 버튼 권한 설정
-            if (typeof window.gwAuth !== 'undefined') {
-                window.gwAuth.isSearch = true;
-                window.gwAuth.isSave = true;
-                window.gwAuth.isDelete = true;
-                window.gwAuth.isConfirm = true;
-                console.log('Button permissions set');
-            }
-
+            // 페이지별 특화 데이터 설정
+            initializePageSpecificData('BDP7070');
+            
+            // 공통 세션 데이터 초기화
             window.overrideSessionData();
-            console.log('Session data overridden after 1 second');
+            console.log('BDP7070 Session data overridden after 1 second');
         }, 1000);
 
-        //*********************************************************************************************
-        // ********** Initialize Session Data Section
-        //*********************************************************************************************
-
-        // 전역 변수 초기화 함수
-        function initializeGlobalVariables() {
-            // window.gwMultiLangItem 초기화
-            if (typeof window.gwMultiLangItem === 'undefined' || window.gwMultiLangItem === null) {
-                window.gwMultiLangItem = {};
-            }
-
-            // window.gwMesEnv 초기화
-            if (typeof window.gwMesEnv === 'undefined' || window.gwMesEnv === null) {
-                window.gwMesEnv = {
-                    user: {},
-                    lang: {}
-                };
-            }
-
-            // window.gwJsonParam 초기화
-            if (typeof window.gwJsonParam === 'undefined' || window.gwJsonParam === null) {
-                window.gwJsonParam = {};
-            }
-
-            // window.gwAuth 초기화
-            if (typeof window.gwAuth === 'undefined' || window.gwAuth === null) {
-                window.gwAuth = {};
-            }
-        }
-
-        // 전역 함수로 정의하여 fc_submit 에서 호출 가능하도록 함
-        window.overrideSessionData = function() {
-            // 전역 변수 초기화 먼저 실행
-            initializeGlobalVariables();
-
-            console.log('=== API 호출 직전 세션 데이터 덮어쓰기 ===');
-
-            // sessionStorage 덮어쓰기 (실제 세션 데이터와 완전히 일치)
-            sessionStorage.setItem('GW_USER_ID', '99991201');
-            sessionStorage.setItem('GW_PGM_ID', 'SI0003');
-            sessionStorage.setItem('GW_LANG_CD', 'KO');
-            sessionStorage.setItem('GW_LINE_CD', '');
-            sessionStorage.setItem('GW_PLANT_CD', '1000');
-            sessionStorage.setItem('GW_CLIENT_IP', '10.2.110.216');
-            sessionStorage.setItem('GW_EMP_NO', '99991201');
-            sessionStorage.setItem('GW_DEPT_CD', 'UNKNOWN');
-            sessionStorage.setItem('GW_DEPT_NM', '');
-            sessionStorage.setItem('GW_ROLE_CD', 'MES_INQ_ROLE,MB_TEMP,ITSM');
-            sessionStorage.setItem('MNU_ID', 'M000001463');
-            sessionStorage.setItem('GW_USER_NM', '김성준');
-            sessionStorage.setItem('GW_WELCOME_PGM_ID', 'SI0003');
-            sessionStorage.setItem('GW_SERVER_INFO', '개발');
-            sessionStorage.setItem('GW_SSO_YN', 'N');
-            sessionStorage.setItem('GW_OUTSIDE_ACCESS_YN', 'N');
-            sessionStorage.setItem('GW_PASSWD_EXPIRE_DT', '20251215');
-            sessionStorage.setItem('GW_OPER_DT', 'jsonData:"1899-11-29T15:32:08.000Z"');
-            sessionStorage.setItem('SYSTEM_LINK_PAGE', '');
-            sessionStorage.setItem('SYSTEM_LINK_KEYS', '');
-            sessionStorage.setItem('SYSTEM_LINK_VALUES', '');
-
-            // GW_SYSTEM_ENV 복잡한 JSON 데이터 설정
-            var systemEnvJson = 'jsonData:{"themes":"ui-redmond","user":{"id":"99991201","name":"김성준","deptCd":"UNKNOWN","clientIp":"10.2.110.216","pgmId":"SI0003","pgmTy":"S","comCd":"LSNC","comNm":"ODS MES","plantCd":"1000","lineCd":""},"grid":{"addFlag":"I","delFlag":"D","updateFlag":"U","isPage":false,"isFilter":false,"isAutoSave":false},"completeMsg":{"isSearch":false,"isSave":true,"isDelete":true,"isConfirm":true,"isSend":true,"isFilesave":true},"mainmenu":{"isMenuAutoHide":true,"isSideMenu":false,"isOpenByClick":true,"isExpand":false,"isPgmId":true},"screen":{"showTabList":true,"tabCaptionLth":25,"logLevel":"1","isDefMessageArea":false,"reportMainPgmId":"SRTC000","reportDefaultURL":"/SRT/pages/","paddingSize":5,"maxinteger":"50","listboxval":"20","listboxmaxlen":"500"},"format":{"delim":{"source":{"date":"","time":"","datetime":""},"target":{"date":"-","time":":","datetime":" "}},"date":{"source":"YMD","target":"YMD","date":{"picker":"yyyy-MM-dd","year":0,"month":1,"day":2},"yearmonth":{"picker":"yyyy-MM"},"monthday":{"picker":"MM-dd"}},"time":{"source":"HMS","target":"HMS","time":{"picker":"HH:mm:ss"},"hour":{"picker":"HH"},"hourmin":{"picker":"HH:mm"},"minsec":{"picker":"mm:ss"}},"slab":{"thk":0,"wth":-1,"lth":-1,"wgt":2},"plate":{"thk":0,"wth":-1,"lth":-1,"wgt":2},"coil":{"thk":0,"wth":-1,"lth":-1,"wgt":2},"bloom":{"thk":0,"wth":-1,"lth":-1,"wgt":2},"billet":{"thk":0,"wth":-1,"lth":-1,"wgt":2},"separate":{"source":{"thousand":"","deciaml":".","decimal":"."},"target":{"thousand":",","deciaml":".","decimal":"."}}},"lang":{"cd":"KO","datepicker":"ko","grid":"ko","isMultiLanguage":true,"isUseDefLabel":false,"prefix":"@_","isUseSession":true,"isMultiLanguageSys":"SCO"},"item":{"itemcd":"item_cd","itemvalue":"item_value","datatype":"datatype","category":"category"},"operInfo":{"date":"","shift":"","dateTime":""},"shift":{"A":"08","B":"20","C":"20","D":"","E":"","CNT":2},"btnSize":{"search":70,"save":70,"del":70,"conf":70,"print":70,"close":70,"cust1":85,"cust2":85,"cust3":85,"cust4":85,"cust5":85}}';
-            sessionStorage.setItem('GW_SYSTEM_ENV', systemEnvJson);
-
-            // window.gwMesEnv 덮어쓰기 (fc_setDefaultParam 에서 사용)
-            if (typeof window.gwMesEnv !== 'undefined') {
-                window.gwMesEnv.user.id = '99991201';
-                window.gwMesEnv.user.name = '김성준';
-                window.gwMesEnv.user.pgmId = 'SI0003';
-                window.gwMesEnv.user.pgmTitle = 'Tag 이벤트/알람 관리 기준';
-                window.gwMesEnv.user.lineCd = '';
-                window.gwMesEnv.user.deptCd = 'UNKNOWN';
-                window.gwMesEnv.user.clientIp = '10.2.110.216';
-                window.gwMesEnv.user.plantCd = '1000';
-                window.gwMesEnv.lang.cd = 'KO';
-                window.gwMesEnv.lang.isUseDefLabel = true; // 기본 라벨 사용 설정
-                console.log('window.gwMesEnv overridden for API call');
-            }
-
-            // window.gwJsonParam 덮어쓰기 (API 파라미터)
-            if (typeof window.gwJsonParam !== 'undefined') {
-                window.gwJsonParam.USER_ID = '99991201';
-                window.gwJsonParam.PGM_ID = 'SI0003';
-                window.gwJsonParam.LANG_CD = 'KO';
-                window.gwJsonParam.LINE_CD = '';
-                window.gwJsonParam.MNU_ID = 'M000001463';
-                console.log('window.gwJsonParam overridden for API call');
-            }
-
-            // 다국어 키값들을 한글로 설정
-            window.gwMultiLangItem['EVENT_RECV_TY'] = { CONTENTS: '이벤트수신유형' };
-            window.gwMultiLangItem['TAG_GRP'] = { CONTENTS: 'Tag그룹' };
-            window.gwMultiLangItem['TAG_NM'] = { CONTENTS: 'Tag명' };
-            window.gwMultiLangItem['EVENT_TY'] = { CONTENTS: '이벤트유형' };
-            window.gwMultiLangItem['LINK_PGM'] = { CONTENTS: '링크프로그램' };
-            window.gwMultiLangItem['COND'] = { CONTENTS: '판단기준' };
-            window.gwMultiLangItem['E'] = { CONTENTS: '이벤트구분' };
-
-            // 버튼 권한 설정
-            if (typeof window.gwAuth !== 'undefined') {
-                window.gwAuth.isSearch = true;
-                window.gwAuth.isSave = true;
-                window.gwAuth.isDelete = true;
-                window.gwAuth.isConfirm = true;
-                console.log('Button permissions set in overrideSessionData');
-            }
-
-            console.log('=== API 호출 직전 덮어쓰기 완료 ===');
-        };
 
         //*********************************************************************************************
         // ********** initialize screen Section
