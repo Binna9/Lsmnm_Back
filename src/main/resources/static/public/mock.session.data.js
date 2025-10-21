@@ -36,6 +36,7 @@ function initializeGlobalVariables() {
  * 세션 스토리지 데이터 초기화 함수
  */
 function initializeSessionStorage() {
+
     console.log('=== 세션 스토리지 데이터 초기화 ===');
 
     sessionStorage.setItem('GW_USER_ID', '99991201');
@@ -189,6 +190,11 @@ function initializePageSpecificData(pageId) {
             window.gwMesEnv.user.pgmTitle = '알람 관리';
             window.gwMesEnv.user.pgmId = 'BDP0040';
             window.gwMesEnv.user.mnuId = 'M000001450';
+            break;
+        case 'BDP0060':
+            window.gwMesEnv.user.pgmTitle = '알람 로그';
+            window.gwMesEnv.user.pgmId = 'BDP0060';
+            window.gwMesEnv.user.mnuId = 'M000001452';
             break;
         case 'BDP6012':
             window.gwMesEnv.user.pgmTitle = 'Tag Chart/Data 조회';

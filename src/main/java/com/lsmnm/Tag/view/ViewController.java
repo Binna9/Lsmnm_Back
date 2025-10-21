@@ -44,4 +44,13 @@ public class ViewController {
     public String bdp0040Page(Model model) {
         return "BDP/BDP0040";
     }
+
+    /**
+     * 알람 로그
+     * GET/VIEW/BDP0040
+     */
+    @GetMapping("/BDP0060")
+    public String bdp0060Page(Model model) {
+        return "BDP/BDP0060";
+    }
 }
