@@ -16,10 +16,21 @@
         // ********** Function Ready Section
         //*********************************************************************************************
         $(document).ready(function () {
+
             f_initSreen();
             f_initSearchForm();
             f_initContents();
             f_lastProc();
+
+            // 프레임워크 초기화 완료 후 세션 데이터 덮어쓰기 (여러 타이밍에 실행)
+            setTimeout(function() {
+                // 페이지별 특화 데이터 설정
+                initializePageSpecificData('BDP7010');
+                
+                // 공통 세션 데이터 초기화
+                window.overrideSessionData();
+                console.log('BDP7010 Session data overridden after 1 second');
+            }, 1000);
 
             // SMZ7050, SMZ7060, SMZ7070 팝업시 버튼 숨김
             if(!fc_isNull(openUrl) && (openUrl == 'SMZ7050' || openUrl == 'SMZ7060' || openUrl == 'SMZ7070' || openUrl == 'SMZ6012')){
@@ -176,6 +187,17 @@
             $( '#MON_TREE_CD').jqxDropDownList( 'selectedIndex', 1 );
             $( '#MON_TREE_CD').jqxDropDownList( 'selectedIndex', 0 );
             fc_setInputVal('FAC_CD','A10');
+
+            // 버튼 강제 표시
+            setTimeout(function() {
+                $('#titleArea').show();
+                $('#mnuSearchBtn').show();
+                $('#mnuCust1Btn').show();
+                $('#mnuCust2Btn').show();
+                $('#mnuCust3Btn').show();
+                $('#mnuCloseBtn').show();
+                console.log('Buttons forced to show');
+            }, 500);
 
         }; // end of f_lastProc
 

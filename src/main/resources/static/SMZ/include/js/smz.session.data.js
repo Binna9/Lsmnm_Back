@@ -129,10 +129,11 @@ function initializeJsonParameters() {
     // window.gwJsonParam 덮어쓰기 (API 파라미터)
     if (typeof window.gwJsonParam !== 'undefined') {
         window.gwJsonParam.USER_ID = '99991201';
-        window.gwJsonParam.PGM_ID = 'SI0003';
+        window.gwJsonParam.PGM_ID = window.gwMesEnv.user.pgmId || 'SI0003';
+        window.gwJsonParam.MNU_ID = window.gwMesEnv.user.mnuId || 'M000001000';
         window.gwJsonParam.LANG_CD = 'KO';
         window.gwJsonParam.LINE_CD = '';
-        console.log('JSON 파라미터 초기화 완료');
+        console.log('JSON 파라미터 초기화 완료 - PGM_ID: ' + window.gwJsonParam.PGM_ID + ', MNU_ID: ' + window.gwJsonParam.MNU_ID);
     }
 }
 
@@ -185,17 +186,31 @@ function initializePageSpecificData(pageId) {
         case 'BDP7070':
             // BDP7070 특화 데이터
             window.gwMesEnv.user.pgmTitle = 'Tag 이벤트/알람 관리 기준';
+            window.gwMesEnv.user.pgmId = 'SMZ7070';
+            window.gwMesEnv.user.mnuId = 'M000001470'; // Tag 이벤트/알람 관리 기준 메뉴 ID
+            break;
+        case 'BDP7010':
+            // BDP7010 특화 데이터 (Tag Master)
+            window.gwMesEnv.user.pgmTitle = 'Tag Master 관리 기준';
+            window.gwMesEnv.user.pgmId = 'SMZ7010';
+            window.gwMesEnv.user.mnuId = 'M000001460'; // Tag Master 관리 기준 메뉴 ID
             break;
         case 'BDP0040':
             // BDP0040 특화 데이터
             window.gwMesEnv.user.pgmTitle = 'Alarm Master';
+            window.gwMesEnv.user.pgmId = 'BDP0040';
+            window.gwMesEnv.user.mnuId = 'M000001450'; // Alarm Master 메뉴 ID (예시)
             break;
         default:
+
+
             // 기본값
             window.gwMesEnv.user.pgmTitle = 'MES System';
+            window.gwMesEnv.user.pgmId = 'SI0003';
+            window.gwMesEnv.user.mnuId = 'M000001460'; // 기본 메뉴 ID
             break;
     }
-    console.log('페이지별 초기화 완료: ' + pageId);
+    console.log('페이지별 초기화 완료: ' + pageId + ', PGM_ID: ' + window.gwMesEnv.user.pgmId + ', MNU_ID: ' + window.gwMesEnv.user.mnuId);
 }
 
 // DOM이 로드되면 자동으로 실행
