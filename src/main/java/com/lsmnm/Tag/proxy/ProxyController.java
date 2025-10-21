@@ -47,7 +47,7 @@ public class ProxyController {
                 module = "SMZ";
             } else if (ServiceName.contains("SCO") || ServiceName.contains("sco")) {
                 module = "SCO";
-            } else if (ServiceName.contains("BDP")) {
+            } else if (ServiceName.contains("BDP") || ServiceName.contains("bdp")) {
                 module = "BDP";
             }
         }
@@ -114,12 +114,12 @@ public class ProxyController {
         // Origin 헤더 - 외부 서버 도메인으로 설정
         headers.set("Origin", "https://mesdev.lsmnm.com");
 
-        // Referer 헤더 동적 설정 - 현재 요청의 referer를 기반으로 설정
         String refererHeader = request.getHeader("Referer");
+
         String refererUrl;
 
         if (refererHeader != null && !refererHeader.isEmpty()) {
-            // 현재 요청의 referer에서 페이지 번호 추출
+            // 현재 요청의 페이지 번호 추출
             if (refererHeader.contains("/BDP7010")) {
                 refererUrl = "https://mesdev.lsmnm.com/BDP/BDP7010.do";
             } else if (refererHeader.contains("/BDP7070")) {

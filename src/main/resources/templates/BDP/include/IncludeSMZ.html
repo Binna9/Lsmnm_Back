@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script>
+        var contextPath = '';
+    </script>
+    <link rel="shortcut icon" th:href="@{/SCO/include/images/company_logo_icon_dw.ico(version=20171213)}" />
+
+    <!-- for jqWidgets -->
+    <link rel="stylesheet" href="https://mesdev.lsmnm.com/SCO/include/css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" th:href="@{/SCO/include/js/jqwidgets/styles/jqx.base.css}" />
+    <link rel="stylesheet" th:href="@{/SCO/include/js/jstree/themes/default/style.css}" />
+    <link rel="stylesheet" href="https://mesdev.lsmnm.com/SCO/include/css/ict.jquery.common.css?version=201911122" type="text/css" />
+    <link rel="stylesheet" href="https://mesdev.lsmnm.com/SCO/include/css/ict.jquery.popup.css?version=20200130" />
+    <link rel="stylesheet" href="https://mesdev.lsmnm.com/SCO/include/css/ict.jquery.messagebox.css" />
+    <link rel="stylesheet" href="https://mesdev.lsmnm.com/SCO/include/css/style_custom.css?version=2" type="text/css" />
+
+    <!-- for jQuery -->
+    <script th:src="@{/SCO/include/js/jquery/jquery-1.12.0.min.js}"></script>
+    <script th:src="@{/SCO/include/js/jquery/jquery.number.js}"></script>
+    <script th:src="@{/SCO/include/js/jquery/jquery.crypt.js}"></script>
+
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxcore.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxdata.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxvalidator.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxbuttons.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxdropdownbutton.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxswitchbutton.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxscrollbar.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxpanel.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxtooltip.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxcalendar.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxdate.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxdatetimeinput.js}"></script>
+    <!--<script th:src="@{/SCO/include/js/jqwidgets/jqxdraw.js}"></script> -->
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxcheckbox.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxbuttongroup.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxlistbox.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxtree.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxdragdrop.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxcombobox.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxdropdownlist.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxwindow.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxmenu.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxnumberinput.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxradiobutton.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxradiobutton.custom.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxsplitter.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxtabs.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxgrid.js(version=20201201)}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxdata.export.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxgrid.aggregates.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxgrid.selection.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxgrid.columnsresize.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxgrid.columnsreorder.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxgrid.edit.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxgrid.export.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxgrid.filter.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxgrid.grouping.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxgrid.sort.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxgrid.storage.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxlistmenu.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxinput.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxresponse.js}"></script>
+    <!-- <script th:src="@{/SCO/include/js/jqwidgets/jqxdatatable.js}"></script> -->
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxtreegrid.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxbulletchart.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxeditor.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxnotification.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxnavbar.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxdockinglayout.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxlayout.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxloader.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxpopover.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxresponsivepanel.js}"></script>
+    <!-- <script th:src="@{/SCO/include/js/jqwidgets/jqxscheduler.js}"></script>  -->
+    <!-- <script th:src="@{/SCO/include/js/jqwidgets/jqxscheduler.api.js}"></script>  -->
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxtagcloud.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxtextarea.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxgrid.custom.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxtabs.custom.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/globalization/globalize.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/globalization/globalize.cultures.js}"></script>
+    <script th:src="@{/SCO/include/js/jqwidgets/jqxcolorpicker.js}"></script>
+
+    <!-- for etc script -->
+    <script th:src="@{/SCO/include/js/jquery/jquery.cookie.js}"></script>
+    <script th:src="@{/SCO/include/js/jquery/jquery.hotkey.js}"></script>
+    <script th:src="@{/SCO/include/js/jquery/spin.js}"></script>
+    <!-- for tree -->
+    <script th:src="@{/SCO/include/js/jstree/jstree.min.js}"></script>
+
+    <!-- for POSCO ICT Reuse -->
+    <script th:src="@{/SCO/include/js/jqWing/ict.jquery.storage.js(version=20191108)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jquery.common.js(version=20191227)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jquery.formatter.js(version=20191108)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jquery.function.js(version=20201211)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jquery.message.js(version=20191108)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jquery.transition.js(version=20191108)}"></script>
+
+    <!--<script th:src="@{/SCO/include/js/jqWing/ict.jqx.chart.js}"></script> -->
+    <script th:src="@{/SCO/include/js/jqWing/ict.jqx.common.js(version=20191108)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jqx.form.js(version=20191109)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jqx.grid.js(version=20191108)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jqx.localization.js(version=20191108)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jqx.tab.js(version=20191108)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jqx.tree.js}"></script>
+    <!--<script th:src="@{/SCO/include/js/jqWing/ict.jqx.treegrid.js}"></script>-->
+
+    <!--<script th:src="@{/SCO/include/js/jqWing/ict.jqx.chart.util.js}"></script> -->
+    <script th:src="@{/SCO/include/js/jqWing/ict.jqx.form.util.js(version=20191109)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jqx.grid.util.js(version=20191121)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jqx.tab.util.js}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jqx.tree.util.js}"></script>
+    <!--<script th:src="@{/SCO/include/js/jqWing/ict.jqx.treegrid.util.js}"></script>-->
+    <script th:src="@{/SCO/include/js/jqWing/ict.jqx.popup.util.js(version=20191108)}"></script>
+    <script th:src="@{/SCO/include/js/jqWing/ict.jquery.init.js(version=20191108)}"></script>
+
+    <!-- Dynamic module loading based on context path -->
+    <script th:src="@{/SMZ/include/js/smz.functions.js(version=20220705)}"></script>
+    <script th:src="@{/public/mock.session.data.js}"></script>
+</head>
+</html>
