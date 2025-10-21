@@ -76,21 +76,16 @@ public class ProxyController {
             ResponseEntity<String> response = restTemplate.postForEntity(externalUrl, requestEntity, String.class);
 
             // 응답 내용 로깅 (디버깅용)
-            System.out.println("Response Status: " + response.getStatusCode());
-            System.out.println("Response Headers: " + response.getHeaders());
             String responseBody = response.getBody();
-            System.out.println("Response Body Length: " + (responseBody != null ? responseBody.length() : "null"));
 
             // 응답 본문이 null 이거나 비어있는 경우 처리
             if (responseBody == null || responseBody.trim().isEmpty()) {
-                System.err.println("Empty response body received");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body("{\"is_success\": false, \"exception_message\": \"Empty response from server\"}");
             }
 
             // 응답이 HTML 인지 확인 (오류 페이지일 가능성)
             if (responseBody.trim().startsWith("<")) {
-                System.err.println("HTML response received instead of JSON: " + responseBody.substring(0, Math.min(200, responseBody.length())));
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body("{\"is_success\": false, \"exception_message\": \"Server returned HTML instead of JSON\"}");
             }
@@ -103,10 +98,7 @@ public class ProxyController {
                     .body(responseBody);
 
         } catch (Exception e) {
-            // 오류 로깅
-            System.err.println("Proxy Error: " + e.getMessage());
             e.printStackTrace();
-
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"is_success\": false, \"exception_message\": \"" + e.getMessage().replace("\"", "\\\"") + "\"}");
         }

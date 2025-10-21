@@ -1,28 +1,31 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <div th:replace="~{BDP/include/include :: head}"></div>
-    <script th:src="@{/SMZ/include/js/jqWing/ict.jqx.tag.js(version=1)}"></script>
-    <script th:src="@{/SMZ/include/js/smz.util.tree.js(version=11)}"></script>
+    <!-- <script src="<c:out value="${commonPath}"/>/include/js/jqWing/ict.jqx.tag.js?version=1"></script>
+     -->
+    <script src="/SMZ/include/js/jqWing/ict.jqx.tag.js?version=1"></script>
+    <script src="/SMZ/include/js/smz.util.tree.js?version=11"></script>
+    <!-- <script src="/SMZ/include/js/smz.common.extend.js"></script> -->
 
     <title>Tag Chart/Data조회</title>
-    <script th:src="@{/SCO/include/js/Highcharts/code/highcharts.js}"></script>
-    <script th:src="@{/SCO/include/js/Highcharts/code/highcharts-more.js}"></script>
-    <script th:src="@{/SCO/include/js/Highcharts/code/modules/exporting.js}"></script>
-    <script th:src="@{/SCO/include/js/Highcharts/code/modules/boost.js}"></script>
-    <script th:src="@{/SCO/include/js/Highcharts/code/modules/annotations.js}"></script>
-    <script th:src="@{/SCO/include/js/Highcharts/code/modules/accessibility.js}"></script>
+    <script src="/SCO/include/js/Highcharts/code/highcharts.js"></script>
+    <script src="/SCO/include/js/Highcharts/code/highcharts-more.js"></script>
+    <script src="/SCO/include/js/Highcharts/code/modules/exporting.js"></script>
+    <script src="/SCO/include/js/Highcharts/code/modules/boost.js"></script>
+    <script src="/SCO/include/js/Highcharts/code/modules/annotations.js"></script>
+    <script src="/SCO/include/js/Highcharts/code/modules/accessibility.js"></script>
 
     <!-- optional -->
-    <script th:src="@{/SCO/include/js/Highcharts/code/modules/offline-exporting.js}"></script>
-    <script th:src="@{/SCO/include/js/Highcharts/code/modules/export-data.js}"></script>
+    <script src="/SCO/include/js/Highcharts/code/modules/offline-exporting.js"></script>
+    <script src="/SCO/include/js/Highcharts/code/modules/export-data.js"></script>
 
     <!-- excel export -->
-    <script th:src="@{/SMZ/include/js/moment.js(version=2017020152)}"></script>
-    <script th:src="@{/SMZ/include/js/excellentexport.js(version=2017020153)}"></script>
-    <script th:src="@{/SMZ/include/js/smz.common.extend.js(version=20210902)}"></script>
+    <script src="/SMZ/include/js/moment.js?version=2017020152"></script>
+    <script src="/SMZ/include/js/excellentexport.js?version=2017020153"></script>
+    <script src="/SMZ/include/js/smz.common.extend.js?version=20210902"></script>
 
     <style>
         .jstree-default .jstree-clicked {
@@ -600,7 +603,7 @@
 
             jstree1.on('loaded.jstree', function( event, nodeObj) {
                 fc_openTreeNode( jstreeObjId1, "0");
-                $("#caption_tagTree1").append("<button onclick='treeReset()' style='width: 78px;height: 23;top: 44px;right: 5px;position: absolute;border: 1px solid #cacaca;' class='jqx-rc-all jqx-rc-all-ui-redmond jqx-button jqx-button-ui-redmond jqx-widget jqx-widget-ui-redmond jqx-fill-state-normal jqx-fill-state-normal-ui-redmond ui-multilanguage formValueCheck'>선택초기화</button>");
+                $("#caption_tagTree1").append("<button onclick='treeReset()' style='width: 78px;height: 23px;top: 44px;right: 5px;position: absolute;border: 1px solid #cacaca;' class='jqx-rc-all jqx-rc-all-ui-redmond jqx-button jqx-button-ui-redmond jqx-widget jqx-widget-ui-redmond jqx-fill-state-normal jqx-fill-state-normal-ui-redmond ui-multilanguage formValueCheck'>선택초기화</button>");
 
                 fc_resizeDivHeight("tagTree1");
 
@@ -711,7 +714,7 @@
 
             jstree2.on('loaded.jstree', function( event, nodeObj) {
                 fc_openTreeNode( jstreeObjId2, "0");
-                $("#caption_tagTree2").append("<button onclick='treeReset()' style='width: 78px;height: 23;top: 44px;right: 5px;position: absolute;border: 1px solid #cacaca;' class='jqx-rc-all jqx-rc-all-ui-redmond jqx-button jqx-button-ui-redmond jqx-widget jqx-widget-ui-redmond jqx-fill-state-normal jqx-fill-state-normal-ui-redmond ui-multilanguage formValueCheck'>선택초기화</button>");
+                $("#caption_tagTree2").append("<button onclick='treeReset()' style='width: 78px;height: 23px; top: 44px;right: 5px;position: absolute;border: 1px solid #cacaca;' class='jqx-rc-all jqx-rc-all-ui-redmond jqx-button jqx-button-ui-redmond jqx-widget jqx-widget-ui-redmond jqx-fill-state-normal jqx-fill-state-normal-ui-redmond ui-multilanguage formValueCheck'>선택초기화</button>");
 
                 fc_resizeDivHeight("tagTree2");
 
@@ -783,7 +786,7 @@
 
             jstree3.on('loaded.jstree', function( event, nodeObj) {
                 fc_openTreeNode( jstreeObjId3, "0");
-                $("#caption_tagTree3").append("<button onclick='treeReset()' style='width: 78px;height: 23;top: 44px;right: 5px;position: absolute;border: 1px solid #cacaca;' class='jqx-rc-all jqx-rc-all-ui-redmond jqx-button jqx-button-ui-redmond jqx-widget jqx-widget-ui-redmond jqx-fill-state-normal jqx-fill-state-normal-ui-redmond ui-multilanguage formValueCheck'>선택초기화</button>");
+                $("#caption_tagTree3").append("<button onclick='treeReset()' style='width: 78px;height: 23px;top: 44px;right: 5px;position: absolute;border: 1px solid #cacaca;' class='jqx-rc-all jqx-rc-all-ui-redmond jqx-button jqx-button-ui-redmond jqx-widget jqx-widget-ui-redmond jqx-fill-state-normal jqx-fill-state-normal-ui-redmond ui-multilanguage formValueCheck'>선택초기화</button>");
 
                 fc_resizeDivHeight("tagTree3");
 
@@ -806,7 +809,7 @@
 
             jstree3.on('loaded.jstree', function( event, nodeObj) {
                 fc_openTreeNode( jstreeObjId3, "0");
-                $("#caption_tagTree3").append("<button onclick='treeReset()' style='width: 78px;height: 23;top: 44px;right: 5px;position: absolute;border: 1px solid #cacaca;' class='jqx-rc-all jqx-rc-all-ui-redmond jqx-button jqx-button-ui-redmond jqx-widget jqx-widget-ui-redmond jqx-fill-state-normal jqx-fill-state-normal-ui-redmond ui-multilanguage formValueCheck'>선택초기화</button>");
+                $("#caption_tagTree3").append("<button onclick='treeReset()' style='width: 78px;height: 23px;top: 44px;right: 5px;position: absolute;border: 1px solid #cacaca;' class='jqx-rc-all jqx-rc-all-ui-redmond jqx-button jqx-button-ui-redmond jqx-widget jqx-widget-ui-redmond jqx-fill-state-normal jqx-fill-state-normal-ui-redmond ui-multilanguage formValueCheck'>선택초기화</button>");
 
                 fc_resizeDivHeight("tagTree3");
 
@@ -2870,7 +2873,7 @@
     <div id="divContents" style="overflow: hidden">
         <div id="divMain" class="tree_info" style="border: 1px solid #d3dbdf;">
             <div id="divLeft1">
-                <div id="divTreeSearch" style="width: 100%; height: 30px;" grptype="group" class="formSearch" style="display: block;"></div>
+                <div id="divTreeSearch" style="width: 100%; height: 30px; display: block;" grptype="group" class="formSearch"></div>
                 <div id="outerMenu" style="height: calc(100% - 25px);">
                     <div id="divTreeTab1" style="width: 100%;"></div>
                     <div id="divMenuTab1" style="width: 100%; height: calc(100% - 27px);" grptype="group" class="contents-float-line"></div>
@@ -2882,8 +2885,8 @@
             </div>
             <div id="divRight1" >
                 <div id="divTreeTab2" style="width: 100%;"></div>
-                <div id="divXChart" style="width: 100%; height: 97%; display:''" grptype="group" class="contents-float-line"></div>
-                <div id="divXGrid"  style="width: 100%; height: calc(100% - 32px); display:'none';" grptype="group" class="contents-float-line"></div>
+                <div id="divXChart" style="width: 100%; height: 97%; display: block;" grptype="group" class="contents-float-line"></div>
+                <div id="divXGrid" style="width: 100%; height: calc(100% - 32px); display: none;" grptype="group" class="contents-float-line"></div>
             </div>
             <!-- 				<div id="divRight1" > -->
             <!-- 					<div id="divTreeTab2" style="width: 100%;"></div> -->
