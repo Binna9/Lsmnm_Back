@@ -57,4 +57,13 @@ public class ViewController {
     public String bdp0040Page() {
         return "BDP/BDP0040";
     }
+
+    /**
+     * GET /tag-master/bdp0040
+     * BDP0040.html 페이지를 띄우는 메서드
+     */
+    @GetMapping("/BDP6012")
+    public String bdp6012Page() {
+        return "BDP/BDP6012";
+    }
 }
