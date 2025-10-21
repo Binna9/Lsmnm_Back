@@ -48,7 +48,6 @@ function initializeSessionStorage() {
     sessionStorage.setItem('GW_DEPT_CD', 'UNKNOWN');
     sessionStorage.setItem('GW_DEPT_NM', '');
     sessionStorage.setItem('GW_ROLE_CD', 'MES_INQ_ROLE,MB_TEMP,ITSM');
-    sessionStorage.setItem('MNU_ID', 'M000001463');
     sessionStorage.setItem('GW_USER_NM', '김성준');
     sessionStorage.setItem('GW_WELCOME_PGM_ID', 'SI0003');
     sessionStorage.setItem('GW_SERVER_INFO', '개발');
@@ -133,7 +132,6 @@ function initializeJsonParameters() {
         window.gwJsonParam.PGM_ID = 'SI0003';
         window.gwJsonParam.LANG_CD = 'KO';
         window.gwJsonParam.LINE_CD = '';
-        window.gwJsonParam.MNU_ID = 'M000001463';
         console.log('JSON 파라미터 초기화 완료');
     }
 }
