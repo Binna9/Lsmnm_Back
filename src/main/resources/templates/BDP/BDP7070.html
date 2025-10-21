@@ -22,13 +22,10 @@
         }); // end of ready
 
         // 프레임워크 초기화 완료 후 세션 데이터 덮어쓰기 (여러 타이밍에 실행)
-        setTimeout(function() {
+        setTimeout(function () {
             // 페이지별 특화 데이터 설정
             initializePageSpecificData('BDP7070');
-            
-            // 공통 세션 데이터 초기화
-            window.overrideSessionData();
-            console.log('BDP7070 Session data overridden after 1 second');
+
         }, 1000);
 
 
