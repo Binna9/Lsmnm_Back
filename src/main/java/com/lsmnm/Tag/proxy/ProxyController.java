@@ -20,31 +20,6 @@ public class ProxyController {
         this.restTemplate = restTemplate;
     }
 
-    @GetMapping("/image")
-    public ResponseEntity<byte[]> proxyImage(@RequestParam String path) {
-        String externalUrl = EXTERNAL_API_BASE + path;
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Referer", "https://mesdev.lsmnm.com/SMZ/SMZ7010.do");
-
-            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
-            ResponseEntity<byte[]> response = restTemplate.exchange(
-                    externalUrl,
-                    HttpMethod.GET,
-                    requestEntity,
-                    byte[].class
-            );
-
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.setContentType(response.getHeaders().getContentType());
-            return new ResponseEntity<>(response.getBody(), responseHeaders, response.getStatusCode());
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
-
     /**
      * 범용 jqGridJSON 프록시 - fc_submit 함수에서 호출하는 API 처리
      * POST /proxy/jqGridJSON.json
@@ -64,7 +39,7 @@ public class ProxyController {
             }
         }
         
-        // 모듈 경로 결정 - ServiceName에 따라 자동 설정
+        // 모듈 경로 결정 - ServiceName 에 따라 자동 설정
         String module = "SCO"; // 기본값
         if (ServiceName != null && !ServiceName.isEmpty()) {
             if (ServiceName.contains("SMZ")) {
@@ -84,9 +59,9 @@ public class ProxyController {
         try {
             HttpHeaders headers = createHeaders(request);
             
-            // 클라이언트에서 보낸 모든 파라미터를 그대로 전달
             MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             Map<String, String[]> parameterMap = request.getParameterMap();
+
             for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
                 String key = entry.getKey();
                 String[] values = entry.getValue();
@@ -102,17 +77,17 @@ public class ProxyController {
             // 응답 내용 로깅 (디버깅용)
             System.out.println("Response Status: " + response.getStatusCode());
             System.out.println("Response Headers: " + response.getHeaders());
-            System.out.println("Response Body Length: " + (response.getBody() != null ? response.getBody().length() : "null"));
-            
-            // 응답 본문이 null이거나 비어있는 경우 처리
             String responseBody = response.getBody();
+            System.out.println("Response Body Length: " + (responseBody != null ? responseBody.length() : "null"));
+            
+            // 응답 본문이 null 이거나 비어있는 경우 처리
             if (responseBody == null || responseBody.trim().isEmpty()) {
                 System.err.println("Empty response body received");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body("{\"is_success\": false, \"exception_message\": \"Empty response from server\"}");
             }
             
-            // 응답이 HTML인지 확인 (오류 페이지일 가능성)
+            // 응답이 HTML 인지 확인 (오류 페이지일 가능성)
             if (responseBody.trim().startsWith("<")) {
                 System.err.println("HTML response received instead of JSON: " + responseBody.substring(0, Math.min(200, responseBody.length())));
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -144,18 +119,18 @@ public class ProxyController {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         
         // 원본 요청과 동일한 헤더 설정
-        headers.set("Origin", "https://mesdev.lsmnm.com");
+        headers.set("Origin", "https://mes.lsmnm.com");
         
-        // Referer 헤더 동적 설정 - ServiceName에 따라 올바른 경로 설정
-        String refererUrl = "https://mesdev.lsmnm.com/SCO/SCO7070.do";
+        // Referer 헤더 동적 설정 - ServiceName 에 따라 올바른 경로 설정
+        String refererUrl = "https://mes.lsmnm.com/SCO/SCO7070.do";
         String serviceName = request.getParameter("ServiceName");
         if (serviceName != null && !serviceName.isEmpty()) {
             if (serviceName.contains("SMZ")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ7070.do";
+                refererUrl = "https://mes.lsmnm.com/SMZ/SMZ7070.do";
             } else if (serviceName.contains("SCO")) {
-                refererUrl = "https://mesdev.lsmnm.com/SCO/SCO7070.do";
+                refererUrl = "https://mes.lsmnm.com/SCO/SCO7070.do";
             } else if (serviceName.contains("BDP")) {
-                refererUrl = "https://mesdev.lsmnm.com/BDP/BDP7070.do";
+                refererUrl = "https://mes.lsmnm.com/BDP/BDP7070.do";
             }
         }
         headers.set("Referer", refererUrl);
@@ -163,8 +138,10 @@ public class ProxyController {
         headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36");
         headers.set("Accept", "application/json, text/javascript, */*; q=0.01");
         headers.set("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7");
-        // Accept-Encoding을 명시적으로 설정하지 않음 (압축 문제 방지)
+
+        // Accept-Encoding 을 명시적으로 설정하지 않음 (압축 문제 방지)
         headers.set("Cache-Control", "no-cache");
+
         headers.set("Pragma", "no-cache");
         headers.set("X-Requested-With", "XMLHttpRequest");
         
