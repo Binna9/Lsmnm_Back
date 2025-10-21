@@ -15,16 +15,12 @@ import java.time.format.DateTimeFormatter;
 public class ViewController {
 
     /**
-     * Tag Master Standard 페이지 렌더링
-     * GET /view/tag-master
+     * Tag Master 페이지 렌더링
+     * GET /view/BDP7010
      */
-    @GetMapping("/SMZ7010")
-    public String tagMasterStandard(Model model, HttpServletRequest request) {
-
-        model.addAttribute("pageTitle", "SMZ7010-TagMasterStandard");
-        model.addAttribute("currentTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-
-        return "TagMasterStandard";
+    @GetMapping("/BDP7010")
+    public String bdp7010Page() {
+        return "BDP/BDP7010";
     }
 
     /**
@@ -41,7 +37,7 @@ public class ViewController {
     }
 
     /**
-     * GET /tag-master/bdp7070
+     * GET/view/bdp7070
      * BDP7070.html 페이지를 띄우는 메서드
      */
     @GetMapping("/BDP7070")
@@ -50,7 +46,7 @@ public class ViewController {
     }
 
     /**
-     * GET /tag-master/bdp0040
+     * GET/view/bdp0040
      * BDP0040.html 페이지를 띄우는 메서드
      */
     @GetMapping("/BDP0040")
