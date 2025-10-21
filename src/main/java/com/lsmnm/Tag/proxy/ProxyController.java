@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.Map;
 
 @RestController
@@ -39,7 +40,6 @@ public class ProxyController {
             }
         }
 
-        // 모듈 경로 결정 - ServiceName 에 따라 자동 설정
         String module = "SCO"; // 기본값
 
         if (ServiceName != null && !ServiceName.isEmpty()) {
@@ -121,24 +121,22 @@ public class ProxyController {
         if (refererHeader != null && !refererHeader.isEmpty()) {
             // 현재 요청의 페이지 번호 추출
             if (refererHeader.contains("/BDP7010")) {
-                refererUrl = "https://mesdev.lsmnm.com/BDP/BDP7010.do";
-            } else if (refererHeader.contains("/BDP7070")) {
-                refererUrl = "https://mesdev.lsmnm.com/BDP/BDP7070.do";
-            } else if (refererHeader.contains("/SMZ7010")) {
                 refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ7010.do";
-            } else if (refererHeader.contains("/SMZ7070")) {
+            } else if (refererHeader.contains("/BDP7070")) {
                 refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ7070.do";
-            } else if (refererHeader.contains("/SCO7010")) {
-                refererUrl = "https://mesdev.lsmnm.com/SCO/SCO7010.do";
-            } else if (refererHeader.contains("/SCO7070")) {
-                refererUrl = "https://mesdev.lsmnm.com/SCO/SCO7070.do";
+            } else if (refererHeader.contains("/BDP6012")) {
+                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6012.do";
+            } else if (refererHeader.contains("/BDP0040")) {
+                refererUrl = "https://mesdev.lsmnm.com/SCO/SCOA0040.do";
+            } else if (refererHeader.contains("/BDP0060")) {
+                refererUrl = "https://mesdev.lsmnm.com/SCO/SCOA0060.do";
             } else {
                 // 기본값으로 모듈에 따른 7010 페이지 설정
-                refererUrl = "https://mesdev.lsmnm.com/" + module + "/" + module + "7010.do";
+                refererUrl = "https://mesdev.lsmnm.com/" + module;
             }
         } else {
             // 기본값으로 모듈에 따른 7010 페이지 설정
-            refererUrl = "https://mesdev.lsmnm.com/" + module + "/" + module + "7010.do";
+            refererUrl = "https://mesdev.lsmnm.com/" + module;
         }
         headers.set("Referer", refererUrl);
 
