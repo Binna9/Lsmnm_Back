@@ -127,7 +127,6 @@ function initializeJsonParameters() {
     if (typeof window.gwJsonParam !== 'undefined') {
         window.gwJsonParam.USER_ID = '99991201';
         window.gwJsonParam.PGM_ID = window.gwMesEnv.user.pgmId || 'SI0003';
-        window.gwJsonParam.MNU_ID = window.gwMesEnv.user.mnuId || 'M000001000';
         window.gwJsonParam.LANG_CD = 'KO';
         window.gwJsonParam.LINE_CD = '';
         console.log('JSON 파라미터 초기화 완료 - PGM_ID: ' + window.gwJsonParam.PGM_ID + ', MNU_ID: ' + window.gwJsonParam.MNU_ID);
@@ -178,22 +177,22 @@ function initializePageSpecificData(pageId) {
         case 'BDP7070':
             window.gwMesEnv.user.pgmTitle = 'Tag 이벤트/알람 관리 기준';
             window.gwMesEnv.user.pgmId = 'SMZ7070';
-            window.gwMesEnv.user.mnuId = 'M000001463'; // Tag 이벤트/알람 관리 기준 메뉴 ID
+            window.gwMesEnv.user.mnuId = 'M000001463';
             break;
         case 'BDP7010':
             window.gwMesEnv.user.pgmTitle = 'Tag Master 관리 기준';
             window.gwMesEnv.user.pgmId = 'SMZ7010';
-            window.gwMesEnv.user.mnuId = 'M000001460'; // Tag Master 관리 기준 메뉴 ID
+            window.gwMesEnv.user.mnuId = 'M000001460';
             break;
         case 'BDP0040':
             window.gwMesEnv.user.pgmTitle = '알람 관리';
             window.gwMesEnv.user.pgmId = 'BDP0040';
-            window.gwMesEnv.user.mnuId = 'M000001450'; // Alarm Master 메뉴 ID (예시)
+            window.gwMesEnv.user.mnuId = 'M000001450';
             break;
         case 'BDP6012':
             window.gwMesEnv.user.pgmTitle = 'Tag Chart/Data 조회';
             window.gwMesEnv.user.pgmId = 'BDP0040';
-            window.gwMesEnv.user.mnuId = 'M000001459'; // Alarm Master 메뉴 ID (예시)
+            window.gwMesEnv.user.mnuId = 'M000001459';
             break;
         default:
             window.gwMesEnv.user.pgmTitle = 'MES System';
