@@ -166,10 +166,10 @@ function f_makeTree( targetObj, treeId, treeCaption, dndFlag, isBom, transaction
 	var jqTree = $( '#' + treeId ).jstree( {
 		types : {
 			'#'       : { max_children : 1, max_depth : 256, valid_children : [ 'root', 'default', 'file', 'report' ] },
-			'root'    : { max_depth : 256, icon : '/SMZ/include/images/tree_tag_blue.png', valid_children : [ 'default', 'file', 'report' ] },
-			'default' : { max_depth : 256, icon : '/SMZ/include/images/tree_tag_blue.png', valid_children : [ 'default', 'file', 'report' ] },
-			'file'    : { max_depth : 256, icon : '/SMZ/include/images/tree_tag_grey.png' , valid_children : [ 'default', 'file' ] },
-			'report'  : { max_depth : 256, icon : '/SMZ/include/images/tree_tag_blue.png', valid_children : [ 'default', 'report' ] }
+			'root'    : { max_depth : 256, icon : 'https://mesdev.lsmnm.com/SMZ/include/images/tree_tag_blue.png', valid_children : [ 'default', 'file', 'report' ] },
+			'default' : { max_depth : 256, icon : 'https://mesdev.lsmnm.com/SMZ/include/images/tree_tag_blue.png', valid_children : [ 'default', 'file', 'report' ] },
+			'file'    : { max_depth : 256, icon : 'https://mesdev.lsmnm.com/SMZ/include/images/tree_tag_blue.png' , valid_children : [ 'default', 'file' ] },
+			'report'  : { max_depth : 256, icon : 'https://mesdev.lsmnm.com/SMZ/include/images/tree_tag_blue.png', valid_children : [ 'default', 'report' ] }
 		},
 		plugins : plugin,
 		ui : {
