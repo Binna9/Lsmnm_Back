@@ -24,40 +24,8 @@ public class ProxyService {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         }
 
-        String refererHeader = request.getHeader("Referer");
+        String refererUrl = "https://mesdev.lsmnm.com/" + module;
 
-        String refererUrl;
-
-        if (refererHeader != null && !refererHeader.isEmpty()) {
-            // 현재 요청의 페이지 번호 추출
-            if (refererHeader.contains("/BDP7010")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ7010.do";
-            } else if (refererHeader.contains("/BDP7070")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ7070.do";
-            } else if (refererHeader.contains("/BDP6012")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6012.do";
-            } else if (refererHeader.contains("/BDP6212")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6212.do";
-            } else if (refererHeader.contains("/BDP6215")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6215.do";
-            } else if (refererHeader.contains("/BDP6213")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6213.do";
-            } else if (refererHeader.contains("/BDP6214")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6214.do";
-            } else if (refererHeader.contains("/BDP0040")) {
-                refererUrl = "https://mesdev.lsmnm.com/SCO/SCOA0040.do";
-            } else if (refererHeader.contains("/BDP0050")) {
-                refererUrl = "https://mesdev.lsmnm.com/SCO/SCOA0050.do";
-            } else if (refererHeader.contains("/BDP0060")) {
-                refererUrl = "https://mesdev.lsmnm.com/SCO/SCOA0060.do";
-            } else {
-                // 기본값으로 모듈에 따른 7010 페이지 설정
-                refererUrl = "https://mesdev.lsmnm.com/" + module;
-            }
-        } else {
-            // 기본값으로 모듈에 따른 7010 페이지 설정
-            refererUrl = "https://mesdev.lsmnm.com/" + module;
-        }
         headers.set("Referer", refererUrl);
 
         headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36");
@@ -90,7 +58,7 @@ public class ProxyService {
         }
 
         try {
-            // URL에서 마지막 경로 세그먼트 추출
+            // URL 마지막 경로 세그먼트 추출
             String[] segments = refererHeader.split("/");
             if (segments.length > 0) {
                 String lastSegment = segments[segments.length - 1];

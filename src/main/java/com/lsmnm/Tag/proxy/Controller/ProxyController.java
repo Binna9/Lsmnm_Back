@@ -51,8 +51,6 @@ public class ProxyController {
                 module = "SMZ";
             } else if (ServiceName.contains("SCO") || ServiceName.contains("sco")) {
                 module = "SCO";
-            } else if (ServiceName.contains("BDP") || ServiceName.contains("bdp")) {
-                module = "BDP";
             }
         }
 

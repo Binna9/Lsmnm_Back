@@ -5265,32 +5265,22 @@ function f_afterRowControl ( gridEvent) {
             s10Auth = window.gwJsonResult.RK_AUTH;
             */
 
-            // var isSearch =  ( window.gwJsonResult.RK_AUTH[ 0 ].IS_SEARCH  == 'Y' ) ? true : false;
-            // var isSave = ( window.gwJsonResult.RK_AUTH[ 0 ].IS_SAVE    == 'Y' ) ? true : false;
-            // var isDelete = ( window.gwJsonResult.RK_AUTH[ 0 ].IS_DELETE  == 'Y' ) ? true : false;
+            var isSearch =  ( window.gwJsonResult.RK_AUTH[ 0 ].IS_SEARCH  == 'Y' ) ? true : false;
+            var isSave = ( window.gwJsonResult.RK_AUTH[ 0 ].IS_SAVE    == 'Y' ) ? true : false;
+            var isDelete = ( window.gwJsonResult.RK_AUTH[ 0 ].IS_DELETE  == 'Y' ) ? true : false;
 
-            // todo : 권한 확인안하고 항상 true
-            var isSearch= true;
-            var isSave = true;
-            var isDelete = true;
-
-            // if(!isSearch ){
-            //     $( "#mnuSearchBtn" ).jqxButton( { disabled: true  } );
-            //     //alert(" search btn disabled== " + isSearch);
-            // }
-            // if(!isSave ){
-            //     $( "#mnuSaveBtn" ).jqxButton( { disabled: true  } );
-            //     //alert(" Save btn disabled== " + isSave);
-            // }
-            // if(!isDelete ){
-            //     $( "#mnuDeleteBtn" ).jqxButton( { disabled: true  } );
-            //     //alert(" Delete btn disabled== " + isDelete);
-            // }
-
-            // todo : 권한 확인안하고 항상 true
-            $( "#mnuSearchBtn" ).jqxButton( { disabled: false  } );
-            $( "#mnuSaveBtn" ).jqxButton( { disabled: false  } );
-            $( "#mnuDeleteBtn" ).jqxButton( { disabled: false  } );
+            if(!isSearch ){
+                $( "#mnuSearchBtn" ).jqxButton( { disabled: true  } );
+                //alert(" search btn disabled== " + isSearch);
+            }
+            if(!isSave ){
+                $( "#mnuSaveBtn" ).jqxButton( { disabled: true  } );
+                //alert(" Save btn disabled== " + isSave);
+            }
+            if(!isDelete ){
+                $( "#mnuDeleteBtn" ).jqxButton( { disabled: true  } );
+                //alert(" Delete btn disabled== " + isDelete);
+            }
 
         } else {
             /* 권한 없음 */
