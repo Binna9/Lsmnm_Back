@@ -46,6 +46,15 @@ public class ViewController {
     }
 
     /**
+     * 알람 관리
+     * GET/VIEW/BDP0050
+     */
+    @GetMapping("/BDP0050")
+    public String bdp0050Page(Model model) {
+        return "BDP/BDP0050";
+    }
+
+    /**
      * 알람 로그
      * GET/VIEW/BDP0040
      */

@@ -126,8 +126,18 @@ public class ProxyController {
                 refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ7070.do";
             } else if (refererHeader.contains("/BDP6012")) {
                 refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6012.do";
+            } else if (refererHeader.contains("/BDP6212")) {
+                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6212.do";
+            } else if (refererHeader.contains("/BDP6215")) {
+                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6215.do";
+            } else if (refererHeader.contains("/BDP6213")) {
+                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6213.do";
+            } else if (refererHeader.contains("/BDP6214")) {
+                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6214.do";
             } else if (refererHeader.contains("/BDP0040")) {
                 refererUrl = "https://mesdev.lsmnm.com/SCO/SCOA0040.do";
+            } else if (refererHeader.contains("/BDP0050")) {
+                refererUrl = "https://mesdev.lsmnm.com/SCO/SCOA0050.do";
             } else if (refererHeader.contains("/BDP0060")) {
                 refererUrl = "https://mesdev.lsmnm.com/SCO/SCOA0060.do";
             } else {

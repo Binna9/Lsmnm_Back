@@ -1,0 +1,309 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <div th:replace="~{BDP/include/IncludeSMZ :: head}"></div>
+    <title>Tag Master</title>
+    <script type="text/javascript">
+        //*********************************************************************************************
+        // ********** Declare public variable
+        //*********************************************************************************************
+        var gridTagMst, gridTagMstId;
+        var openUrl = fc_getUrlParameter( 'openUrl' );
+        var openGridRowIndex = fc_getUrlParameter( 'openGridRowIndex' );
+        //*********************************************************************************************
+        // ********** Function Ready Section
+        //*********************************************************************************************
+        $(document).ready(function () {
+
+            f_initSreen();
+            f_initSearchForm();
+            f_initContents();
+            f_lastProc();
+
+            // SMZ7050, SMZ7060, SMZ7070 팝업시 버튼 숨김
+            if(!fc_isNull(openUrl) && (openUrl == 'SMZ7050' || openUrl == 'SMZ7060' || openUrl == 'SMZ7070' || openUrl == 'SMZ6012')){
+                setTimeout(function() {
+                    $('#divgrp_LINK_BIZ_TAG').hide();
+                    $('#divgrp_LINK_TAG_MACRO').hide();
+                    $('#divgrp_LINK_TAG_EVENT').hide();
+
+                    $('#mnuSaveBtn').hide();
+                    $('#mnuCust1Btn').hide();
+                    $('#mnuCust2Btn').hide();
+                    $('#mnuCust3Btn').hide();
+
+                    // Tag Chart에서 속성을 조회
+                    if(openUrl == 'SMZ6012'){
+
+                        var pTagCodeArr = fc_getUrlParameter('pTagCodeArr');
+                        fc_setInputVal('TAG_ID', pTagCodeArr);
+
+                        fc_addParam('DETAIL_YN','Y')
+                        f_search();
+                    }
+
+
+                }, 100);
+            }
+
+        }); // end of ready
+
+        //*********************************************************************************************
+        // ********** initialize screen Section
+        //*********************************************************************************************
+        function f_initSreen() {
+            serviceName = 'smz.tag.master-service';
+        }; // end of f_initSreen
+
+        //*********************************************************************************************
+        // ********** Initialize Search Condition Section
+        //*********************************************************************************************
+        function f_initSearchForm() {
+            fc_makeSearch( '', 'TAG_DICTIONARY', '' );
+            fc_setFormRadioValue( 'SEARCH_TY', [    { id:'SCR'  , key:'SCR'   , caption:'화면별'},
+                { id:'PROC' , key:'PROC' , caption:'공정별'}
+            ], false );
+
+            $('#SEARCH_TY').on('change', function(event){
+                if(fc_getRadioVal("SEARCH_TY") == 'PROC'){
+                    $('#divgrp_FAC_CD').show();
+                    $('#divgrp_PROC_CD').show();
+                    $('#divgrp_ASSET_CD').show();
+                    $('#divgrp_MON_TREE_CD').hide();
+                    $('#divgrp_MON_SCR_CD').hide();
+                }else{
+                    $('#divgrp_FAC_CD').hide();
+                    $('#divgrp_PROC_CD').hide();
+                    $('#divgrp_ASSET_CD').hide();
+                    $('#divgrp_MON_TREE_CD').show();
+                    $('#divgrp_MON_SCR_CD').show();
+                }
+
+            });
+
+            fc_setBindEvent('LINK_TAG_HIST', 'click', f_linkTagHist );
+            fc_setBindEvent('LINK_BIZ_TAG', 'click', f_linkBizTags );
+            fc_setBindEvent('LINK_TAG_MACRO', 'click', f_linkTagMacro );
+            fc_setBindEvent('LINK_TAG_EVENT', 'click', f_linkTagEvent );
+            fc_setBindEvent('LINK_TAG_SCR', 'click', f_linkTagScr );
+
+
+
+        }; // end of f_initSearchForm
+
+        //*********************************************************************************************
+        // ********** Initialize data Section
+        //*********************************************************************************************
+        function f_initContents () {
+            gridTagMst   = fc_makeGrid( 'divTagDictionary', 'search', 'TAG_DICTIONARY', '', false );
+            gridTagMstId = gridTagMst.getGridId();
+
+            $("#"+ gridTagMstId).on("rowdoubleclick", function (event) {
+
+                if(!fc_isNull(openUrl)){
+
+                    var args = event.args;
+                    var tag_id = fc_getCellData( gridTagMstId, args.rowindex, 'TAG_ID');
+                    var tag_nm = fc_getCellData( gridTagMstId, args.rowindex, 'TAG_NM');
+                    var mgmt_ll_val = fc_getCellData( gridTagMstId, args.rowindex, 'MGMT_LL_VAL');
+                    var mgmt_ul_val = fc_getCellData( gridTagMstId, args.rowindex, 'MGMT_UL_VAL');
+
+                    if( openUrl == 'SMZ7070'){
+                        parent.f_receiveGridData(tag_id, tag_nm, mgmt_ll_val, mgmt_ul_val, openGridRowIndex);
+                    }else if(openUrl == 'SMZ7050' || openUrl == 'SMZ7060' ){
+                        parent.f_receiveGridData(tag_id, tag_nm, openGridRowIndex );
+                    }
+
+                    $('#mnuCloseBtn').trigger('click');
+                }
+
+
+            });
+
+        }; // end of f_initContents
+
+        //*********************************************************************************************
+        // ********** Last Process Job
+        //*********************************************************************************************
+        function f_lastProc() {
+            fc_lastProc();
+
+            fc_removePageableInGrid ( [ gridTagMstId ] );
+
+            /*
+            $( '#' + gridItemId ).jqxGrid( 'getInstance' ).pagereloadbtn.hide()
+            $( '#' + gridItemId ).jqxGrid( 'getInstance' ).pageaddbtn.hide()
+            $( '#' + gridItemId ).jqxGrid( 'getInstance' ).pagecopybtn.hide()
+            $( '#' + gridItemId ).jqxGrid( 'getInstance' ).pagedeletebtn.hide()
+            */
+
+            fc_setFormComboFilter( { object: 'PROC_CD'
+                , code: 'TAG_COST_CENTER'
+                , format: 'V'
+                , nullable: true
+                , defval: ''
+                , parentColNm: 'FAC_CD'
+                , arrowColNm: 'ATTR1'
+                , parentNullOpt: true
+            } );
+
+            fc_setFormComboFilter( { object: 'ASSET_CD'
+                , code: 'TAG_ASSET_CD'
+                , format: 'V'
+                , nullable: true
+                , defval: ''
+                , parentColNm: 'PROC_CD'
+                , arrowColNm: 'ATTR1'
+                , parentNullOpt: true
+            } );
+
+            fc_setFormComboFilter( { object: 'MON_SCR_CD'
+                , code: 'MON_SCR_CD'
+                , format: 'V'
+                , nullable: false
+                , defval: ''
+                , parentColNm: 'MON_TREE_CD'
+                , arrowColNm: 'TAGS'
+                , parentNullOpt: true
+            } );
+
+
+            //combo control
+            $( '#MON_TREE_CD').jqxDropDownList('dropDownHeight',400);
+
+            fc_setInputVal('SEARCH_TY','SCR');
+            $( '#MON_TREE_CD').jqxDropDownList( 'selectedIndex', 1 );
+            $( '#MON_TREE_CD').jqxDropDownList( 'selectedIndex', 0 );
+            fc_setInputVal('FAC_CD','A10');
+
+            // 버튼 강제 표시
+            setTimeout(function() {
+                $('#titleArea').show();
+                $('#mnuSearchBtn').show();
+                $('#mnuCust1Btn').show();
+                $('#mnuCust2Btn').show();
+                $('#mnuCust3Btn').show();
+                $('#mnuCloseBtn').show();
+                console.log('Buttons forced to show');
+            }, 500);
+
+        }; // end of f_lastProc
+
+        //*********************************************************************************************
+        // ********** Screen Button Event Section
+        //*********************************************************************************************
+        function f_search() {
+            if(fc_getRadioVal("SEARCH_TY") == 'SCR' && fc_isNull(fc_getInputVal('MON_SCR_CD'))){
+                if(fc_isNull(fc_getInputVal('TAG_ID')) && fc_isNull(fc_getInputVal('TAG_NM'))){
+                    fc_showMessageBox( '화면정보는 필수 선택 사항입니다.', 'E' );
+                    return;
+                }
+            }
+
+            fc_addParamForm( 'divSearchCondition' );
+            fc_searchGrid( [ { gridId: gridTagMstId, resultKey: 'RK_TAG_MST_LIST' } ], serviceName, 'searchTagMst' );
+        }; // end of fm_search
+        function f_save() {
+            //fc_saveGrid( [ gridTagMstId ], '', serviceName, 'saveTagMst' );
+        }; // end of f_save
+        // end of f_delete
+
+        function f_cust1(){
+            //신규추가
+            f_popDetail('I', null);
+        }
+
+        function f_cust2(){
+            //항목관리
+            var selRow = fc_getSelRow( gridTagMstId );
+            if(!fc_isNull(selRow) && selRow > -1){
+                f_popDetail('U', fc_getCellData(gridTagMstId, selRow, 'TAG_ID'))
+            }else{
+                fc_showMessageBox( '행을 선택 바랍니다.', 'E' );
+            }
+        }
+
+        function f_cust3() {
+            //삭제
+            var selRow = fc_getSelRow( gridTagMstId );
+            if(!fc_isNull(selRow) && selRow > -1){
+                fc_addParam('TAG_ID',fc_getCellData(gridTagMstId, selRow, 'TAG_ID'))
+
+                //fc_setMessage(['MSG00006'] )
+                fc_showConfirmMessage( 'D', null//'MSG00006'//'[Tag : '+fc_getCellData(gridTagMstId, selRow, 'TAG_ID')+']를 삭제하시겠습니까??'
+                    , function () { fc_submit('', serviceName, 'deleteTagMst'); }
+                    , function () { return; }
+                );
+                /*
+                function fc_delete( prmServiceNm, prmTransitionNm, askConfirm, msgItemCd, afterCallback, cancelCallback, arrFormModel, arrTargetModel ) {
+                        */
+
+            }else{
+                fc_showMessageBox( '행을 선택 바랍니다.', 'E' );
+            }
+
+            //fc_deleteGrid( [ gridTagMstId ], '', serviceName, 'deleteTagMst' );
+        };
+
+        function f_popDetail(popType, tagId){
+            fc_linkagePopup( 'SMZ7011'
+                ,[ {name:'POP_TYPE', value:popType}
+                    ,{name:'TAG_ID', value:tagId}
+                ]
+                ,'700px','580px'
+                ,true);
+        }
+
+        function f_linkBizTags(){
+            fc_linkageTab( 'SMZ7050',null);
+        }
+
+        function f_linkTagMacro(){
+            fc_linkageTab( 'SMZ7060',null);
+        }
+
+        function f_linkTagEvent(){
+            fc_linkageTab( 'SMZ7070',null);
+        }
+
+        function f_linkTagScr(){
+            fc_linkageTab( 'SMZ7080',null);
+        }
+
+        function f_linkTagHist(){
+            var selRow = fc_getSelRow( gridTagMstId );
+            if(!fc_isNull(selRow) && selRow > -1){
+
+                fc_linkagePopup( 'SMZ7020'
+                    ,[ {name:'TAG_ID', value : fc_getCellData(gridTagMstId, selRow, 'TAG_ID')}
+                    ]
+                    ,'800px','700px'
+                    ,true);
+
+            }else{
+                fc_showMessageBox( '행을 선택 바랍니다.', 'E' );
+            }
+        }
+
+        //*********************************************************************************************
+        // ********** User Defined Function Section
+        //*********************************************************************************************
+    </script>
+</head>
+<body>
+<div id="divContainer">
+    <div id="divTitle">
+        <div th:replace="~{BDP/include/IncludeTitleSMZ :: title}"></div>
+    </div>
+    <div id="divSearchCondition"></div>
+    <div id="divContents">
+        <div id="divTagDictionary"></div>
+    </div>
+</div>
+<div id="divMessage">
+    <div th:replace="~{BDP/include/IncludeMessageSMZ :: message}"></div>
+</div>
+</body>
+</html>

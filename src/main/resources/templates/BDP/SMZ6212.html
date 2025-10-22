@@ -22,13 +22,6 @@
             f_initContents();
             f_lastProc();
 
-            // 프레임워크 초기화 완료 후 세션 데이터 덮어쓰기 (여러 타이밍에 실행)
-            setTimeout(function() {
-                // 페이지별 특화 데이터 설정
-                initializePageSpecificData('BDP7010');
-
-            }, 1000);
-
             // SMZ7050, SMZ7060, SMZ7070 팝업시 버튼 숨김
             if(!fc_isNull(openUrl) && (openUrl == 'SMZ7050' || openUrl == 'SMZ7060' || openUrl == 'SMZ7070' || openUrl == 'SMZ6012')){
                 setTimeout(function() {

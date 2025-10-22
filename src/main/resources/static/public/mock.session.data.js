@@ -170,46 +170,6 @@ function autoInitializeSessionData() {
     }, 1000);
 }
 
-/**
- * 페이지별 초기화 함수 (선택적)
- * 특정 페이지에서 추가적인 초기화가 필요한 경우 사용
- */
-function initializePageSpecificData(pageId) {
-    switch(pageId) {
-        case 'BDP7070':
-            window.gwMesEnv.user.pgmTitle = 'Tag 이벤트/알람 관리 기준';
-            window.gwMesEnv.user.pgmId = 'SMZ7070';
-            window.gwMesEnv.user.mnuId = 'M000001463';
-            break;
-        case 'BDP7010':
-            window.gwMesEnv.user.pgmTitle = 'Tag Master 관리 기준';
-            window.gwMesEnv.user.pgmId = 'SMZ7010';
-            window.gwMesEnv.user.mnuId = 'M000001460';
-            break;
-        case 'BDP0040':
-            window.gwMesEnv.user.pgmTitle = '알람 관리';
-            window.gwMesEnv.user.pgmId = 'BDP0040';
-            window.gwMesEnv.user.mnuId = 'M000001450';
-            break;
-        case 'BDP0060':
-            window.gwMesEnv.user.pgmTitle = '알람 로그';
-            window.gwMesEnv.user.pgmId = 'BDP0060';
-            window.gwMesEnv.user.mnuId = 'M000001452';
-            break;
-        case 'BDP6012':
-            window.gwMesEnv.user.pgmTitle = 'Tag Chart/Data 조회';
-            window.gwMesEnv.user.pgmId = 'BDP0040';
-            window.gwMesEnv.user.mnuId = 'M000001459';
-            break;
-        default:
-            window.gwMesEnv.user.pgmTitle = 'MES System';
-            window.gwMesEnv.user.pgmId = 'SMZ6012';
-            window.gwMesEnv.user.mnuId = 'M000000000'; // 기본 메뉴 ID
-            break;
-    }
-    console.log('페이지별 초기화 완료: ' + pageId + ', PGM_ID: ' + window.gwMesEnv.user.pgmId + ', MNU_ID: ' + window.gwMesEnv.user.mnuId);
-}
-
 $(document).ready(function() {
     // 자동 초기화 실행
     autoInitializeSessionData();
