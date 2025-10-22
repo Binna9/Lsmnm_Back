@@ -1,5 +1,6 @@
-package com.lsmnm.Tag.proxy;
+package com.lsmnm.Tag.proxy.Controller;
 
+import com.lsmnm.Tag.proxy.Service.ProxyService;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -15,11 +16,14 @@ import java.util.Map;
 public class ProxyController {
 
     private final RestTemplate restTemplate;
-    private final String EXTERNAL_API_BASE = "https://mesdev.lsmnm.com";
+    private final ProxyService proxyService;
 
-    public ProxyController(RestTemplate restTemplate) {
+    public ProxyController(RestTemplate restTemplate, ProxyService proxyService) {
         this.restTemplate = restTemplate;
+        this.proxyService = proxyService;
     }
+
+    private final String EXTERNAL_API_BASE = "https://mesdev.lsmnm.com";
 
     /**
      * 범용 jqGridJSON 프록시 - fc_submit 함수에서 호출하는 API 처리
@@ -31,7 +35,7 @@ public class ProxyController {
             @RequestParam(required = false) Map<String, String> allParams,
             HttpServletRequest request) {
 
-        // URL 파라미터에서 ServiceName 과 Transition Name 추출
+        // URL 파라미터에서 ServiceName 과 Transition Name 추출 , allParams 는 Client 단에서 보내주는 파람
         String transitionName = null;
         for (Map.Entry<String, String> entry : allParams.entrySet()) {
             if (!entry.getKey().equals("ServiceName") && entry.getValue().equals("1")) {
@@ -40,7 +44,7 @@ public class ProxyController {
             }
         }
 
-        String module = "SCO"; // 기본값
+        String module = "SCO"; // Default
 
         if (ServiceName != null && !ServiceName.isEmpty()) {
             if (ServiceName.contains("SMZ") || ServiceName.contains("smz")) {
@@ -58,7 +62,10 @@ public class ProxyController {
         }
 
         try {
-            HttpHeaders headers = createHeaders(request, module);
+            HttpHeaders headers = proxyService.createHeaders(request, module);
+
+            // Referer 에서 PGM_ID 추출
+            String pgmId = proxyService.extractPgmIdFromReferer(request.getHeader("Referer"));
 
             MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             Map<String, String[]> parameterMap = request.getParameterMap();
@@ -69,6 +76,11 @@ public class ProxyController {
                 for (String value : values) {
                     body.add(key, value);
                 }
+            }
+
+            // PGM_ID가 추출되었으면 기존 값을 덮어쓰기
+            if (pgmId != null && !pgmId.isEmpty()) {
+                body.set("PGM_ID", pgmId);
             }
 
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
@@ -102,72 +114,5 @@ public class ProxyController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"is_success\": false, \"exception_message\": \"" + e.getMessage().replace("\"", "\\\"") + "\"}");
         }
-    }
-
-    /**
-     * 공통 헤더 생성 - 원본 요청과 동일한 헤더 설정
-     */
-    private HttpHeaders createHeaders(HttpServletRequest request, String module) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        // Origin 헤더 - 외부 서버 도메인으로 설정
-        headers.set("Origin", "https://mesdev.lsmnm.com");
-
-        String refererHeader = request.getHeader("Referer");
-
-        String refererUrl;
-
-        if (refererHeader != null && !refererHeader.isEmpty()) {
-            // 현재 요청의 페이지 번호 추출
-            if (refererHeader.contains("/BDP7010")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ7010.do";
-            } else if (refererHeader.contains("/BDP7070")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ7070.do";
-            } else if (refererHeader.contains("/BDP6012")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6012.do";
-            } else if (refererHeader.contains("/BDP6212")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6212.do";
-            } else if (refererHeader.contains("/BDP6215")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6215.do";
-            } else if (refererHeader.contains("/BDP6213")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6213.do";
-            } else if (refererHeader.contains("/BDP6214")) {
-                refererUrl = "https://mesdev.lsmnm.com/SMZ/SMZ6214.do";
-            } else if (refererHeader.contains("/BDP0040")) {
-                refererUrl = "https://mesdev.lsmnm.com/SCO/SCOA0040.do";
-            } else if (refererHeader.contains("/BDP0050")) {
-                refererUrl = "https://mesdev.lsmnm.com/SCO/SCOA0050.do";
-            } else if (refererHeader.contains("/BDP0060")) {
-                refererUrl = "https://mesdev.lsmnm.com/SCO/SCOA0060.do";
-            } else {
-                // 기본값으로 모듈에 따른 7010 페이지 설정
-                refererUrl = "https://mesdev.lsmnm.com/" + module;
-            }
-        } else {
-            // 기본값으로 모듈에 따른 7010 페이지 설정
-            refererUrl = "https://mesdev.lsmnm.com/" + module;
-        }
-        headers.set("Referer", refererUrl);
-
-        headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36");
-        headers.set("Accept", "application/json, text/javascript, */*; q=0.01");
-        headers.set("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7");
-
-        // Accept-Encoding 을 명시적으로 설정하지 않음 (압축 문제 방지)
-        headers.set("Cache-Control", "no-cache");
-
-        headers.set("Pragma", "no-cache");
-        headers.set("X-Requested-With", "XMLHttpRequest");
-
-        // sec-ch-ua 헤더들 (Chrome 보안 헤더)
-        headers.set("sec-ch-ua", "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"");
-        headers.set("sec-ch-ua-mobile", "?0");
-        headers.set("sec-ch-ua-platform", "\"Windows\"");
-        headers.set("sec-fetch-dest", "empty");
-        headers.set("sec-fetch-mode", "cors");
-        headers.set("sec-fetch-site", "same-origin");
-
-        return headers;
     }
 }

@@ -10,34 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ViewController {
 
     /**
-     * Tag Master 관리 기준
-     * GET/VIEW/BDP7010
-     */
-    @GetMapping("/BDP7010")
-    public String bdp7010Page(Model model) {
-        return "BDP/BDP7010";
-    }
-
-    /**
-     * Tag Event / Alarm 관리 기준
-     * GET/VIEW/BDP7070
-     */
-    @GetMapping("/BDP7070")
-    public String bdp7070Page(Model model) {
-        return "BDP/BDP7070";
-    }
-
-    /**
-     * Tag Chart/Data 조회
-     * GET/VIEW/BDP6012
-     */
-    @GetMapping("/BDP6012")
-    public String bdp6012Page(Model model) {
-        return "BDP/BDP6012";
-    }
-
-    /**
-     * 알람 관리
+     * 알람 관리 (MAIN) - DONE
      * GET/VIEW/BDP0040
      */
     @GetMapping("/BDP0040")
@@ -46,20 +19,101 @@ public class ViewController {
     }
 
     /**
-     * 알람 관리
-     * GET/VIEW/BDP0050
-     */
-    @GetMapping("/BDP0050")
-    public String bdp0050Page(Model model) {
-        return "BDP/BDP0050";
-    }
-
-    /**
-     * 알람 로그
-     * GET/VIEW/BDP0040
+     * 알람 로그 (MAIN) - DONE
+     * GET/VIEW/BDP0060
      */
     @GetMapping("/BDP0060")
     public String bdp0060Page(Model model) {
         return "BDP/BDP0060";
+    }
+
+    /**
+     * Tag Chart/Data 조회 (MAIN) - DONE
+     * GET/VIEW/BDP6012
+     */
+    @GetMapping("/BDP6012")
+    public String bdp6012Page(Model model) {
+        return "BDP/BDP6012";
+    }
+
+    /**
+     * Tag Event / Alarm 관리 기준 (MAIN) - DONE
+     * GET/VIEW/BDP7070
+     */
+    @GetMapping("/BDP7070")
+    public String bdp7070Page(Model model) {
+        return "BDP/BDP7070";
+    }
+
+    /**
+     * 알람 수신자 등록 (SUB)
+     * GET/VIEW/SCOA0050 - DONE
+     */
+    @GetMapping("/SCOA0050")
+    public String SCOA0050Page(Model model) {
+        return "BDP/SCOA0050";
+    }
+
+    /**
+     * Chart 속성 변경 (SUB)
+     * GET/VIEW/SMZ6212 - DONE
+     */
+    @GetMapping("/SMZ6212")
+    public String SMZ6212Page(Model model) {
+        return "BDP/SMZ6212";
+    }
+
+    /**
+     * 사용자 계산식 추가 (SUB)
+     * GET/VIEW/SMZ6213 - DONE
+     */
+    @GetMapping("/SMZ6213")
+    public String SMZ6213Page(Model model) {
+        return "BDP/SMZ6213";
+    }
+
+    /**
+     * Chart 메모 (SUB)
+     * GET/VIEW/SMZ6214
+     */
+    @GetMapping("/SMZ6214")
+    public String SMZ6214Page(Model model) {
+        return "BDP/SMZ6214";
+    }
+
+    /**
+     * HTML 색상표 (SUB)
+     * GET/VIEW/SMZ6215
+     */
+    @GetMapping("/SMZ6215")
+    public String SMZ6215Page(Model model) {
+        return "BDP/SMZ6215";
+    }
+
+    /**
+     * 즐겨찾기 관리 (SUB)
+     * GET/VIEW/SMZ6216
+     */
+    @GetMapping("/SMZ6216")
+    public String SMZ6216Page(Model model) {
+        return "BDP/SMZ6216";
+    }
+
+    /**
+     * Tag Master 관리 기준 (SUB) - DONE
+     * GET/VIEW/SMZ7010
+     */
+    @GetMapping("/SMZ7010")
+    public String SMZ7010Page(Model model) {
+        return "BDP/SMZ7010";
+    }
+
+    /**
+     * Virtual Tag 관리 (SUB) - DONE
+     * GET/VIEW/SMZ7030
+     */
+    @GetMapping("/SMZ7030")
+    public String SMZ7030Page(Model model) {
+        return "BDP/SMZ7030";
     }
 }

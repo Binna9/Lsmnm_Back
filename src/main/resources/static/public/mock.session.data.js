@@ -40,6 +40,7 @@ function initializeSessionStorage() {
     console.log('=== 세션 스토리지 데이터 초기화 ===');
 
     sessionStorage.setItem('GW_USER_ID', '99991201');
+    // todo : default(SI0003)
     sessionStorage.setItem('GW_PGM_ID', 'SI0003');
     sessionStorage.setItem('GW_LANG_CD', 'KO');
     sessionStorage.setItem('GW_LINE_CD', '');
@@ -66,28 +67,28 @@ function initializeSessionStorage() {
     console.log('세션 스토리지 데이터 초기화 완료');
 }
 
-/**
- * 다국어 키값 초기화 함수
- */
-function initializeMultiLanguageItems() {
-    // 다국어 키값들을 한글로 설정
-    window.gwMultiLangItem['EVENT_RECV_TY'] = { CONTENTS: '이벤트수신유형' };
-    window.gwMultiLangItem['TAG_GRP'] = { CONTENTS: 'Tag그룹' };
-    window.gwMultiLangItem['TAG_NM'] = { CONTENTS: 'Tag명' };
-    window.gwMultiLangItem['EVENT_TY'] = { CONTENTS: '이벤트유형' };
-    window.gwMultiLangItem['LINK_PGM'] = { CONTENTS: '링크프로그램' };
-    window.gwMultiLangItem['COND'] = { CONTENTS: '판단기준' };
-    window.gwMultiLangItem['E'] = { CONTENTS: '이벤트구분' };
-    
-    // BDP0040 관련 다국어 항목 추가
-    window.gwMultiLangItem['ALARM_TO_USER'] = { CONTENTS: '알람대상사용자' };
-    window.gwMultiLangItem['ALARM_TO_ROLE'] = { CONTENTS: '알람대상역할' };
-    window.gwMultiLangItem['PLANT_CD'] = { CONTENTS: '공장코드' };
-    window.gwMultiLangItem['BIZ_CHAIN_CD'] = { CONTENTS: '업무체인코드' };
-    window.gwMultiLangItem['ALARM_TYPE'] = { CONTENTS: '알람유형' };
-    
-    console.log('다국어 키값 초기화 완료');
-}
+// /**
+//  * 다국어 키값 초기화 함수
+//  */
+// function initializeMultiLanguageItems() {
+//     // 다국어 키값들을 한글로 설정
+//     window.gwMultiLangItem['EVENT_RECV_TY'] = { CONTENTS: '이벤트수신유형' };
+//     window.gwMultiLangItem['TAG_GRP'] = { CONTENTS: 'Tag그룹' };
+//     window.gwMultiLangItem['TAG_NM'] = { CONTENTS: 'Tag명' };
+//     window.gwMultiLangItem['EVENT_TY'] = { CONTENTS: '이벤트유형' };
+//     window.gwMultiLangItem['LINK_PGM'] = { CONTENTS: '링크프로그램' };
+//     window.gwMultiLangItem['COND'] = { CONTENTS: '판단기준' };
+//     window.gwMultiLangItem['E'] = { CONTENTS: '이벤트구분' };
+//
+//     // BDP0040 관련 다국어 항목 추가
+//     window.gwMultiLangItem['ALARM_TO_USER'] = { CONTENTS: '알람대상사용자' };
+//     window.gwMultiLangItem['ALARM_TO_ROLE'] = { CONTENTS: '알람대상역할' };
+//     window.gwMultiLangItem['PLANT_CD'] = { CONTENTS: '공장코드' };
+//     window.gwMultiLangItem['BIZ_CHAIN_CD'] = { CONTENTS: '업무체인코드' };
+//     window.gwMultiLangItem['ALARM_TYPE'] = { CONTENTS: '알람유형' };
+//
+//     console.log('다국어 키값 초기화 완료');
+// }
 
 /**
  * 권한 설정 함수
@@ -146,13 +147,11 @@ window.overrideSessionData = function() {
     initializeGlobalVariables();
     // 2. 세션 스토리지 초기화
     initializeSessionStorage();
-    // 3. 다국어 키값 초기화
-    initializeMultiLanguageItems();
-    // 4. 권한 설정
+    // 3. 권한 설정
     initializeAuthPermissions();
-    // 5. MES 환경 변수 초기화
+    // 4. MES 환경 변수 초기화
     initializeMesEnvironment();
-    // 6. JSON 파라미터 초기화
+    // 5. JSON 파라미터 초기화
     initializeJsonParameters();
     
     console.log('=== 공통 세션 데이터 초기화 완료 ===');

@@ -1,15 +1,17 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <div th:replace="~{BDP/include/IncludeSCO :: head}"></div>
-    <title>Alarm Master</title>
+    <div th:replace="~{BDP/include/IncludeSMZ :: head}"></div>
+    <title>Tag Formula</title>
     <script type="text/javascript">
         //*********************************************************************************************
         // ********** Declare public variable
         //*********************************************************************************************
-        var gridAlarm, gridAlarmId;
+        var gridTagFrml, gridTagFrmlId;
+        var openUrl = fc_getUrlParameter('openUrl');
+        var openGridRowIndex = fc_getUrlParameter('openGridRowIndex');
 
         //*********************************************************************************************
         // ********** Function Ready Section
@@ -18,9 +20,6 @@
             f_initSreen();
             f_initSearchForm();
             f_initContents();
-        }); // end of ready
-
-        $(window).load(function () {
             f_lastProc();
         }); // end of ready
 
@@ -28,248 +27,194 @@
         // ********** initialize screen Section
         //*********************************************************************************************
         function f_initSreen() {
-            serviceName = 'ict.screen.master.alarm-service';
-//     	f_time_check_log('f_initSreen');
+            serviceName = 'smz.tag.frml-service';
         }; // end of f_initSreen
 
         //*********************************************************************************************
         // ********** Initialize Search Condition Section
         //*********************************************************************************************
         function f_initSearchForm() {
-            fc_makeSearch( '', 'ALARM_INFO', '' );
-//  		f_time_check_log('f_initSearchForm');
+            fc_makeSearch('', 'TAG_FRML', '');
         }; // end of f_initSearchForm
 
         //*********************************************************************************************
         // ********** Initialize data Section
         //*********************************************************************************************
-        function f_initContents () {
-            gridAlarm   = fc_makeGrid( 'divAlarm', 'insert', 'ALARM_INFO', '', false );
-            gridAlarmId = gridAlarm.getGridId();
+        function f_initContents() {
+            gridTagFrml = fc_makeGrid('divTagFrml', 'insert', 'TAG_FRML', '', false);
+            gridTagFrmlId = gridTagFrml.getGridId();
 
-            $("#"+ gridAlarmId).on('cellvaluechanged', function (event){
-                var args = event.args;
-                var datafield = event.args.datafield;
-                if ( datafield === 'ALARM_ACTION_TYPE' ) {
-                    if( fc_getCellData( gridAlarmId, args.rowindex, 'ALARM_ACTION_TYPE') != 'P') {
-                        fc_setCellData( gridAlarmId, args.rowindex, 'PAGE_LINK_ID'		,  '');
+            fc_setGridParam(gridTagFrmlId, {selectionmode: 'singlerow', clipboard: true});
+            gridTagFrml.setGridBindEvent('rowselect', f_setTagFrmlDetailContents);
+
+            $("#" + gridTagFrmlId).on("rowdoubleclick", function (event) {
+
+                if (!fc_isNull(openUrl)) {
+                    var args = event.args;
+                    var tag_id = fc_getCellData(gridTagFrmlId, args.rowindex, 'VTL_TAG_ID');
+                    var tag_nm = fc_getCellData(gridTagFrmlId, args.rowindex, 'VTL_TAG_NM');
+
+                    if (openUrl == 'SMZ7060') {
+                        parent.f_receiveGridData(tag_id, tag_nm, openGridRowIndex, null, null);
                     }
+
+                    $('#mnuCloseBtn').trigger('click');
                 }
+
+
             });
 
-            $("#"+ gridAlarmId).on("cellclick", function (event) {
-                var args = event.args;
-                var rowBoundIndex = args.rowindex;
-                var dataField = args.datafield;
-                if ( dataField === 'ALARM_TO_USER' || dataField === 'ALARM_TO_ROLE' ) {
-                    f_UserRollSetting ( gridAlarmId + '.' + dataField, rowBoundIndex );
-                }
-            });
-//     	f_time_check_log('f_initContents');
-            f_button_hide();
+            fc_makeSplitter('divMain', '70%', '30%');
         }; // end of f_initContents
 
         //*********************************************************************************************
         // ********** Last Process Job
         //*********************************************************************************************
         function f_lastProc() {
-
-            fc_setMessage ( [ 'MSG00011' ] );
             fc_lastProc();
 
-            fc_setInputVal('PLANT_CD', fc_getUserPlantCd());
+            fc_setFormComboFilter({
+                object: 'PROC_CD'
+                , code: 'TAG_COST_CENTER'
+                , format: 'V'
+                , nullable: true
+                , defval: ''
+                , parentColNm: 'FAC_CD'
+                , arrowColNm: 'ATTR1'
+                , parentNullOpt: true
+            });
 
-// 		f_time_check_log('f_lastProc');
-            f_button_hide();
+            fc_setFormComboFilter({
+                object: 'ASSET_CD'
+                , code: 'TAG_ASSET_CD'
+                , format: 'V'
+                , nullable: true
+                , defval: ''
+                , parentColNm: 'PROC_CD'
+                , arrowColNm: 'ATTR1'
+                , parentNullOpt: true
+            });
+
+            fc_setGridComboFilter({
+                object: gridTagFrmlId + '.PROC_CD_1'
+                , code: 'TAG_COST_CENTER'
+                , format: 'V'
+                , nullable: true
+                , defval: ''
+                , parentColNm: 'FAC_CD'
+                , arrowColNm: 'ATTR1'
+            });
+
+            fc_setGridComboFilter({
+                object: gridTagFrmlId + '.ASSET_CD_1'
+                , code: 'TAG_ASSET_CD'
+                , format: 'V'
+                , nullable: true
+                , defval: ''
+                , parentColNm: 'PROC_CD_1'
+                , arrowColNm: 'ATTR1'
+            });
+
         }; // end of f_lastProc
 
         //*********************************************************************************************
         // ********** Screen Button Event Section
         //*********************************************************************************************
         function f_search() {
-            fc_addParamForm( 'divSearchCondition' );
-            fc_searchGrid( [ { gridId: gridAlarmId, resultKey: 'RK_ALARM' } ], serviceName, 'searchAlarm' );
-            f_button_hide();
+            f_initDetail();
+            fc_addParamForm('divSearchCondition');
+            fc_searchGrid([{gridId: gridTagFrmlId, resultKey: 'RK_TAG_FRML_LIST'}], serviceName, 'searchTagFrml');
         }; // end of f_search
 
         function f_save() {
-            var checkPks = true;
-            var alarmToUser = null;
-            var alarmToRole = null;
-            var rowCount = fc_getGridRecordCount(gridAlarmId);
-            for (var rowIndex=0; rowIndex<rowCount; rowIndex++ ) {
-                if(fc_getCellData(gridAlarmId, rowIndex, 'JQX_CB')){
-                    alarmToUser = fc_getCellData( gridAlarmId, rowIndex, 'ALARM_TO_USER');
-                    alarmToRole = fc_getCellData( gridAlarmId, rowIndex, 'ALARM_TO_ROLE');
-                    if ( fc_isNull(alarmToUser) && fc_isNull(alarmToRole) ){
-                        checkPks = false;
-                        break;
-                    }
-                }
-            }
-
-            if (!checkPks){
-                fc_showMessageBox( fc_getMessage( 'MSG00011', fc_getMultiItem('ALARM_TO_USER'), fc_getMultiItem('ALARM_TO_ROLE') ), 'W');
-                return;
-            }
-
-            fc_addParamForm( 'divSearchCondition' );
-            fc_saveGrid( [ gridAlarmId ], '', serviceName, 'saveAlarm', null, null, null, f_saveAfter );
+            f_setTagFrmlTextToGrid();
+            fc_saveGrid([gridTagFrmlId], '', serviceName, 'saveTagFrml');
         }; // end of f_save
 
-        function f_saveAfter () {
-            fc_setGridData( [ { gridId: gridAlarmId, resultKey: 'RK_ALARM' } ] );
-            f_button_hide();
-        }; // end of f_saveAfter
-
         function f_delete() {
-            fc_deleteGrid( [ gridAlarmId ], '', serviceName, 'deleteAlarm' );
-            f_button_hide();
+            fc_deleteGrid([gridTagFrmlId], '', serviceName, 'deleteTagFrml');
         }; // end of f_delete
-
-
 
         //*********************************************************************************************
         // ********** User Defined Function Section
-        //*********************************************************************************************
-        function f_afterRowControl ( gridEvent ) {
-            console.log('gridEvent.ROW_IDX : ' + gridEvent.ROW_IDX + ', gridEvent.EVENT : ' + gridEvent.EVENT);
-            if ( gridEvent.EVENT == 'I' && gridEvent.GRID_ID == gridAlarmId ) {
-                fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'PLANT_CD' 		, fc_getGirdLovValue( gridEvent.GRID_ID, 'PLANT_CD', fc_getInputVal('PLANT_CD') ) );
-                fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'BIZ_CHAIN_CD' 	, fc_getGirdLovValue( gridEvent.GRID_ID, 'BIZ_CHAIN_CD', fc_getInputVal('BIZ_CHAIN_CD') ) );
-                fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'ALARM_TYPE' 		, fc_getGirdLovValue( gridEvent.GRID_ID, 'ALARM_TYPE', fc_getInputVal('ALARM_TYPE') ) );
+        //*********************************************************************************************v
+        function f_initDetail() {
+            fc_setInputVal('FRML_ORGNL_TEXT', '');
+            fc_setInputVal('FRML_JAVA_TEXT', '');
+            //fc_setInputVal( 'FRML_SQL_TEXT'    , '' );
+        }; // end of f_initDetail
 
-                fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'ALARM_BLINK' 		, false );
-                fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'ALARM_ACTION_TYPE' 	, fc_getGirdLovValue( gridEvent.GRID_ID, 'ALARM_ACTION_TYPE', 'C' ) );
+        function f_setTagFrmlDetailContents(event) {
+            // event arguments.
+            var args = event.args;
+            var rowData = args.row;
+            var rowBoundIndex = args.rowindex;
 
-                fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'CONF_NOW' 			, true );
-                fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'DISP_ALARM_TM' 		, true );
-                fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'ALARM_USE_YN' 		, true );
+            fc_setInputVal('FRML_ORGNL_TEXT', rowData.FRML_ORGNL);
+            fc_setInputVal('FRML_JAVA_TEXT', rowData.FRML_JAVA);
+            //fc_setInputVal( 'FRML_SQL_TEXT'    , rowData.FRML_SQL  );
+        }; // f_setTagFrmlDetailContents
 
-            } else if ( gridEvent.EVENT == 'C' && gridEvent.GRID_ID == gridAlarmId ) {
-                fc_setCellData( gridEvent.GRID_ID, gridEvent.ROW_IDX, 'ALARM_ID' , null  );
-            };
-        }; // end of f_afterRowControl
+        function f_setTagFrmlTextToGrid() {
+            var vSelIdx = fc_getSelRow(gridTagFrmlId);
+            if (vSelIdx < 0) return;
 
-        function f_beforePopupClose( rtnObj ) {
-            if ( fc_isNull( rtnObj ) ) return true;
+            fc_setCellData(gridTagFrmlId, vSelIdx, 'FRML_ORGNL', fc_getInputVal('FRML_ORGNL_TEXT'));
+            fc_setCellData(gridTagFrmlId, vSelIdx, 'FRML_JAVA', fc_getInputVal('FRML_JAVA_TEXT'));
+            //fc_setCellData( gridTagFrmlId, vSelIdx, 'FRML_SQL', fc_getInputVal( 'FRML_SQL_TEXT' ) );
 
-            if ( rtnObj.COL_NAME == 'ALARM_MSG_ID') {
-                gridAlarm.setCellData( rtnObj.ROW_ID, 'ALARM_MSG_ID'		, rtnObj.ROW_DATA.CD_VAL 	);
-                gridAlarm.setCellData( rtnObj.ROW_ID, 'ALARM_MSG_CONTENTS'	, rtnObj.ROW_DATA.REMARKS  	);
-            }
-            else if ( rtnObj.COL_NAME == 'CONF_MSG_ID') {
-                gridAlarm.setCellData( rtnObj.ROW_ID, 'CONF_MSG_ID'			, rtnObj.ROW_DATA.CD_VAL 	);
-                gridAlarm.setCellData( rtnObj.ROW_ID, 'CONF_MSG_TYPE'		, rtnObj.ROW_DATA.CD_NM  	);
-                gridAlarm.setCellData( rtnObj.ROW_ID, 'CONF_MSG_CONTENTS'	, rtnObj.ROW_DATA.REMARKS  	);
-            }
-            return true;
-        }; // end of f_beforePopupClose
-
-        function f_cellbeginedit(row, datafield){
-            if ( datafield == 'ALARM_INVOKE_INTERVAL' ) {
-                if( fc_getCellData( gridAlarmId, row, 'ALARM_AUTO_POP') != 'Y') return false;
-            }
-            else if ( datafield == 'PAGE_LINK_ID' ) {
-                if( fc_getCellData( gridAlarmId, row, 'ALARM_ACTION_TYPE') != 'P') return false;
-            }
-            else if ( datafield == 'CONF_MSG_ID' 		|| datafield == 'CONF_MSG_TYPE' 	|| datafield == 'CONF_MSG_CONTENTS'
-                ||    datafield == 'CONF_MSG_PARAM1' 	|| datafield == 'CONF_MSG_PARAM2' 	|| datafield == 'CONF_MSG_PARAM3' ) {
-                if( fc_getCellData( gridAlarmId, row, 'ALARM_ACTION_TYPE') != 'M') return false;
-            }
-            else if ( datafield == 'EMAIL_ID' ) {
-                if( fc_getCellData( gridAlarmId, row, 'EMAIL_SEND_YN') != 'Y') return false;
-            }
-        }; // end of f_cellbeginedit
-
-        function f_UserRollSetting(targetColumn, rowid) {
-            fc_setGridCheckBoxVal(gridAlarmId, rowid, true);
-            if ( targetColumn == gridAlarmId+'.ALARM_TO_USER' || targetColumn == gridAlarmId+ '.ALARM_TO_ROLE' ) {
-                alarmUserType = targetColumn === gridAlarmId+'.ALARM_TO_USER' ? 'U' : 'R';
-                fc_linkagePopup( "SCOA0050", [ { name: "targetColumn"	, value: targetColumn }, { name: "alarmUserType", value: alarmUserType },
-                    { name: "alarmToUser"	, value: fc_getCellData( gridAlarmId, rowid, 'ALARM_TO_USER') 	},
-                    { name: "smsFl"			, value: fc_getCellData( gridAlarmId, rowid, 'ALARM_SMS_FL') 	},
-                    { name: "smsTimeFl"	    , value: fc_getCellData( gridAlarmId, rowid, 'ALARM_SMS_TIME_FL')},
-                    { name: "kakaoFl"		, value: fc_getCellData( gridAlarmId, rowid, 'ALARM_KAKAO_FL') 	},
-                    { name: "kakaoTimeFl"	, value: fc_getCellData( gridAlarmId, rowid, 'ALARM_KAKAO_TIME_FL')},
-                    { name: "kakaoTimeCl"	, value: fc_getCellData( gridAlarmId, rowid, 'ALARM_KAKAO_TIME_CL')},
-                    { name: "emailFl"		, value: fc_getCellData( gridAlarmId, rowid, 'ALARM_EMAIL_FL') 	},
-                    { name: "alarmToUser2"	, value: fc_getCellData( gridAlarmId, rowid, 'ALARM_TO_USER2') 	},
-                    { name: "smsFl2"			, value: fc_getCellData( gridAlarmId, rowid, 'ALARM_SMS_FL2') 	},
-                    { name: "emailFl2"		, value: fc_getCellData( gridAlarmId, rowid, 'ALARM_EMAIL_FL2') },
-                    { name: "alarmToRole"	, value: fc_getCellData( gridAlarmId, rowid, 'ALARM_TO_ROLE')	},
-                    { name: "plantCd"		, value: fc_getInputVal( 'PLANT_CD')	},
-                    { name: "rowid"			, value: rowid	},
-                ], '70%', '90%', true );
-            }
-        }; // end of f_UserRollSetting
-
-
-        function f_receiveGridData(targetColumn,  pGridData, rowIndex ) {
-            var roleCd  = [];
-            var roleNm  = [];
-            var smsFl   = [];
-            var smsTimeFl = [];
-            var kakaoFl   = [];
-            var kakaoTimeFl = [];
-            var kakaoTimeCl = [];
-            var emailFl = [];
-            $.each(pGridData, function (key, value){
-                console.log('A0040 pGridData : ' + JSON.stringify(value));
-                roleCd.push(value.ROLE_CD);
-                roleNm.push(value.ROLE_NM);
-                smsFl.push(value.ALARM_SMS_FL);
-                smsTimeFl.push(fc_isNull(value.ALARM_SMS_TIME_FL) ? false : value.ALARM_SMS_TIME_FL );
-                kakaoFl.push(value.ALARM_KAKAO_FL);
-                kakaoTimeFl.push(fc_isNull(value.ALARM_KAKAO_TIME_FL) ? false : value.ALARM_KAKAO_TIME_FL );
-                kakaoTimeCl.push(value.ALARM_KAKAO_TIME_CL);
-                emailFl.push(value.ALARM_EMAIL_FL);
-            });
-            fc_setCellData( gridAlarmId, rowIndex, targetColumn.substr(targetColumn.indexOf('.')+1), roleCd.join(','));
-            fc_setCellData( gridAlarmId, rowIndex, 'ALARM_SMS_FL', smsFl.join(','));
-            fc_setCellData( gridAlarmId, rowIndex, 'ALARM_SMS_TIME_FL', smsTimeFl.join(','));
-            fc_setCellData( gridAlarmId, rowIndex, 'ALARM_KAKAO_FL', kakaoFl.join(','));
-            fc_setCellData( gridAlarmId, rowIndex, 'ALARM_KAKAO_TIME_FL', kakaoTimeFl.join(','));
-            fc_setCellData( gridAlarmId, rowIndex, 'ALARM_KAKAO_TIME_CL', kakaoTimeCl.join(','));
-            fc_setCellData( gridAlarmId, rowIndex, 'ALARM_EMAIL_FL', emailFl.join(','));
-        }; // end of f_receiveGridData
-
-        function f_receiveGridData2(targetColumn,  pGridData, rowIndex ) {
-            var roleCd   = [];
-            var smsFl2   = [];
-            var emailFl2 = [];
-
-            $.each(pGridData, function (key, value){
-                roleCd.push(value.ROLE_CD);
-                smsFl2.push(value.ALARM_SMS_FL2);
-                emailFl2.push(value.ALARM_EMAIL_FL2);
-            });
-            fc_setCellData( gridAlarmId, rowIndex, 'ALARM_TO_USER2', roleCd.join(','));
-            fc_setCellData( gridAlarmId, rowIndex, 'ALARM_SMS_FL2', smsFl2.join(','));
-            fc_setCellData( gridAlarmId, rowIndex, 'ALARM_EMAIL_FL2', emailFl2.join(','));
-        }; // end of f_receiveGridData
-
-        function f_time_check_log(funcName) {
-            console.log('SCOA0040 : ' + funcName + '========>' + fc_getCurrentDateTime());
-        }
-
-        function f_button_hide(){
-            $('#GRID_COPY_BTN').hide();
-        }
+        }; // end of f_setTagFrmlTextToGrid
     </script>
 </head>
 <body>
 <div id="divContainer">
     <div id="divTitle">
-        <div th:replace="~{BDP/include/IncludeTitleSCO :: title}"></div>
+        <div th:replace="~{BDP/include/IncludeTitleSMZ :: title}"></div>
     </div>
     <div id="divSearchCondition"></div>
     <div id="divContents">
-        <div id="divAlarm"></div>
+        <div id="divMain">
+            <div id="divTagFrml" style="width:70%; height:100%;" floatType="left" class='contents-float-left'></div>
+            <div id="divCurrent" style="width:30%; height:100%;" floatType="left"
+                 class='contents-float-left  addpadding-left'>
+
+                <div id="divTagChoice2" style="width:100%; height:20px;" floatType="group" class='contents-float-line'>
+                    <ul>
+                        <li>계산식 Java</li>
+                    </ul>
+                </div>
+                <div id="divBlank2" style="width:100%; height:3px;" floatType="group" class='contents-float-line'></div>
+                <div id="divTagEditable2" style="width:100%; height: 45%;" floatType="group"
+                     class='contents-float-line'>
+                    <textarea id="FRML_JAVA_TEXT"
+                              style="width:100%; height: 100%;font-family:'Courier New';"></textarea>
+                </div>
+
+                <div id="divTagChoice1" style="width:100%; height:20px;" floatType="group" class='contents-float-line'>
+                    <ul>
+                        <li>계산식 원본</li>
+                    </ul>
+                </div>
+                <div id="divBlank1" style="width:100%; height:3px;" floatType="group" class='contents-float-line'></div>
+                <div id="divTagEditable1" style="width:100%; height: 45%;" floatType="group"
+                     class='contents-float-line'>
+                    <textarea id="FRML_ORGNL_TEXT"
+                              style="width:100%; height: 100%;font-family:'Courier New';"></textarea>
+                </div>
+                <!-- 					<div id="divTagChoice3" style="width:100%; height:20px;" floatType="group" class='contents-float-line'> -->
+                <!-- 						<ul><li>계산식 SQL</li></ul> -->
+                <!--                     </div> -->
+                <!-- 					<div id="divBlank3" style="width:100%; height:3px;" floatType="group" class='contents-float-line'></div> -->
+                <!-- 					<div id="divTagEditable3" style="width:100%; height: 25%;" floatType="group" class='contents-float-line'> -->
+                <!-- 						<textarea id="FRML_SQL_TEXT" style="width:100%; height: 100%;font-family:'Courier New';"></textarea> -->
+                <!-- 					</div> -->
+            </div>
+        </div>
     </div>
 </div>
+</div>
 <div id="divMessage">
-    <div th:replace="~{BDP/include/IncludeMessageSCO :: message}"></div>
+    <div th:replace="~{BDP/include/IncludeMessageSMZ :: message}"></div>
 </div>
 </body>
 </html>
