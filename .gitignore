@@ -35,3 +35,32 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Sensitive Configuration Files ###
+# 민감한 정보가 포함된 설정 파일들
+src/main/resources/application-dev.properties
+src/main/resources/application-prod.properties
+src/main/resources/application-local.properties
+
+# SSL 인증서 및 키스토어 파일들
+*.cer
+*.crt
+*.pem
+*.p12
+*.jks
+*.keystore
+cacerts_backup
+
+# 환경변수 파일들
+.env
+.env.local
+.env.development
+.env.production
+
+# 로그 파일들
+*.log
+logs/
+
+# 임시 파일들
+*.tmp
+*.temp
