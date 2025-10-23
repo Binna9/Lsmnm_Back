@@ -10,11 +10,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ViewController {
 
     /**
+     * 알람 DashBoard (MAIN) - DONE
+     * GET/VIEW/BDP0000
+     */
+    @GetMapping("/BDP0000")
+    public String BDP0000Page(Model model) {
+        return "BDP/BDP0000";
+    }
+
+    /**
      * 알람 관리 (MAIN) - DONE
      * GET/VIEW/BDP0040
      */
-    @GetMapping("/SCOA0040")
-    public String BDP0040Page(Model model) {
+    @GetMapping("/BDP0040")
+    public String bdp0040Page(Model model) {
         return "BDP/BDP0040";
     }
 
@@ -22,7 +31,7 @@ public class ViewController {
      * 알람 로그 (MAIN) - DONE
      * GET/VIEW/BDP0060
      */
-    @GetMapping("/SCOA0060")
+    @GetMapping("/BDP0060")
     public String bdp0060Page(Model model) {
         return "BDP/BDP0060";
     }
@@ -31,7 +40,7 @@ public class ViewController {
      * Tag Chart/Data 조회 (MAIN) - DONE
      * GET/VIEW/BDP6012
      */
-    @GetMapping("/SMZ6012")
+    @GetMapping("/BDP6012")
     public String bdp6012Page(Model model) {
         return "BDP/BDP6012";
     }
@@ -40,7 +49,7 @@ public class ViewController {
      * Tag Event / Alarm 관리 기준 (MAIN) - DONE
      * GET/VIEW/BDP7070
      */
-    @GetMapping("/SMZ7070")
+    @GetMapping("/BDP7070")
     public String bdp7070Page(Model model) {
         return "BDP/BDP7070";
     }

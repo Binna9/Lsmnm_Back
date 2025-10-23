@@ -1212,7 +1212,8 @@ function fc_linkagePopup( pageId, arrParams, nWidth, nHeight, isModal ) {
 		var moduleId = pageId.substring( 0,3 );
 		fc_setSessionItem( 'GW_PGM_ID', pageId );
 		fc_setSessionItem( 'GW_TITLE' , '' );
-		var targetPage = '../' + moduleId + '/' + pageId + '.do' + paramString;
+		// Spring Boot 프로젝트에 맞게 URL 수정
+		var targetPage = '/view/' + pageId + paramString;
 		window.popWin.openPop( pageId, targetPage );
 	} catch ( e ) {
 		fc_getException( e );
