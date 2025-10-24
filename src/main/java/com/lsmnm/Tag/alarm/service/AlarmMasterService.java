@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +43,17 @@ public class AlarmMasterService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
+        // 100개씩 청크로 나누기
+        List<List<AlarmMasterSearchResponseDto>> chunkedList = IntStream.range(0, alarmMasters.size())
+                .boxed()
+                .collect(Collectors.groupingBy(i -> i / 100))
+                .values()
+                .stream()
+                .map(indices -> indices.stream()
+                        .map(alarmMasters::get)
+                        .collect(Collectors.toList()))
+                .collect(Collectors.toList());
+
         int recordCount = alarmMasters.size();
         String statusMsg = String.format("[%s] %d record have been selected",
                 java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
@@ -51,7 +63,7 @@ public class AlarmMasterService {
                 .displaymsg(null)
                 .isSuccess(true)
                 .statusMsg(statusMsg)
-                .RK_ALARM(alarmMasters)
+                .RK_ALARM(chunkedList)
                 .build();
     }
 

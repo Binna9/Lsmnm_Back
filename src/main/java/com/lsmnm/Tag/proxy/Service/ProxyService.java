@@ -74,7 +74,6 @@ public class ProxyService {
                 }
             }
         } catch (Exception e) {
-            // 로깅은 하되 예외는 무시하고 null 반환
             System.err.println("PGM_ID 추출 중 오류: " + e.getMessage());
         }
 
