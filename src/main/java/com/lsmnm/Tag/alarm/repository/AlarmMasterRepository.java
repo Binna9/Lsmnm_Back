@@ -1,6 +1,8 @@
 package com.lsmnm.Tag.alarm.repository;
 
-import com.lsmnm.Tag.alarm.dto.AlarmMasterResponseDto;
+import com.lsmnm.Tag.alarm.dto.AlarmMasterProjection;
+import com.lsmnm.Tag.alarm.entity.AlarmMaster;
+import com.lsmnm.Tag.alarm.entity.AlarmMasterId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AlarmMasterRepository extends JpaRepository<Object, Long> {
+public interface AlarmMasterRepository extends JpaRepository<AlarmMaster, AlarmMasterId> {
 
     /**
      * 알람 마스터 조회
@@ -20,7 +22,7 @@ public interface AlarmMasterRepository extends JpaRepository<Object, Long> {
              , biz_chain_cd as bizChainCd
              , alarm_type as alarmType
              , alarm_msg_id as alarmMsgId
-             , COALESCE(pkg_alarm.f_get_MessageContents(alarm_msg_id), alarm_msg_contents) as alarmMsgContents
+             , alarm_msg_contents as alarmMsgContents
              , CASE WHEN alarm_blink = 'Y' THEN 'true' ELSE 'false' END as alarmBlink
              , CASE WHEN alarm_auto_close = 'Y' THEN 'true' ELSE 'false' END as alarmAutoClose
              , CASE WHEN alarm_auto_pop = 'Y' THEN 'true' ELSE 'false' END as alarmAutoPop
@@ -32,7 +34,7 @@ public interface AlarmMasterRepository extends JpaRepository<Object, Long> {
              , page_link_id as pageLinkId
              , conf_msg_id as confMsgId
              , conf_msg_type as confMsgType
-             , COALESCE(pkg_alarm.f_get_MessageContents(conf_msg_id), conf_msg_contents) as confMsgContents
+             , conf_msg_contents as confMsgContents
              , conf_msg_param1 as confMsgParam1
              , conf_msg_param2 as confMsgParam2
              , conf_msg_param3 as confMsgParam3
@@ -52,7 +54,7 @@ public interface AlarmMasterRepository extends JpaRepository<Object, Long> {
              , alarm_kakao_time_fl as alarmKakaoTimeFl
              , alarm_kakao_time_cl as alarmKakaoTimeCl
              , email_title as emailTitle
-        FROM scom.SCO_ALARM_MASTER
+        FROM scom.sco_alarm_master
        WHERE PLANT_CD     = :plantCd
          AND (:bizChainCd IS NULL OR :bizChainCd = '' OR BIZ_CHAIN_CD = :bizChainCd)
          AND (:alarmType IS NULL OR :alarmType = '' OR ALARM_TYPE = :alarmType)
@@ -60,7 +62,7 @@ public interface AlarmMasterRepository extends JpaRepository<Object, Long> {
          AND (:alarmMsgId IS NULL OR :alarmMsgId = '' OR ALARM_MSG_ID = :alarmMsgId)
          AND (:alarmMsgContents IS NULL OR :alarmMsgContents = '' OR ALARM_MSG_CONTENTS LIKE '%' || :alarmMsgContents || '%')
        ORDER BY ALARM_ID""", nativeQuery = true)
-    List<AlarmMasterResponseDto> searchAlarmMasters(
+    List<AlarmMasterProjection> searchAlarmMasters(
             @Param("plantCd") String plantCd,
             @Param("bizChainCd") String bizChainCd,
             @Param("alarmType") String alarmType,

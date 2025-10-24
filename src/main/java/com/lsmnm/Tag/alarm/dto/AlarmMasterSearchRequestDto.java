@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AlarmMasterRequestDto {
+public class AlarmMasterSearchRequestDto {
     
     private String plantCd;
     private String bizChainCd;

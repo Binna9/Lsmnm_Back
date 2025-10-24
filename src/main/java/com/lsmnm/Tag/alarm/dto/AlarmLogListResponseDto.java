@@ -13,6 +13,6 @@ public class AlarmLogListResponseDto {
     private String displaymsg;
     private Boolean isSuccess;
     private String statusMsg;
-    private List<AlarmLogResponseDto> rkAlarmLog;
+    private List<AlarmLogSearchResponseDto> rkAlarmLog;
 }
 

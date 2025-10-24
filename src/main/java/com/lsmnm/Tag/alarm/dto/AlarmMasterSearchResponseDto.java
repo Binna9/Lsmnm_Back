@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AlarmMasterResponseDto {
+public class AlarmMasterSearchResponseDto {
     
     private String plantCd;
     private String alarmId;
@@ -47,4 +47,3 @@ public class AlarmMasterResponseDto {
     private String emailTitle;
     private String jqxCb;
 }
-

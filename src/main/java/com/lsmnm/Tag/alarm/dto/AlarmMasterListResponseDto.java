@@ -1,5 +1,6 @@
 package com.lsmnm.Tag.alarm.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
@@ -10,7 +11,16 @@ import java.util.List;
 @Builder
 public class AlarmMasterListResponseDto {
     
+    @JsonProperty("displaymsg")
     private String displaymsg;
-    private List<AlarmMasterResponseDto> RK_ALARM;
+    
+    @JsonProperty("is_success")
+    private Boolean isSuccess;
+    
+    @JsonProperty("statusMsg")
+    private String statusMsg;
+    
+    @JsonProperty("RK_ALARM")
+    private List<AlarmMasterSearchResponseDto> RK_ALARM;
 }
 

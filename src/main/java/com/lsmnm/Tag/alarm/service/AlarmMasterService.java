@@ -1,8 +1,9 @@
 package com.lsmnm.Tag.alarm.service;
 
 import com.lsmnm.Tag.alarm.dto.AlarmMasterListResponseDto;
-import com.lsmnm.Tag.alarm.dto.AlarmMasterRequestDto;
-import com.lsmnm.Tag.alarm.dto.AlarmMasterResponseDto;
+import com.lsmnm.Tag.alarm.dto.AlarmMasterProjection;
+import com.lsmnm.Tag.alarm.dto.AlarmMasterSearchRequestDto;
+import com.lsmnm.Tag.alarm.dto.AlarmMasterSearchResponseDto;
 import com.lsmnm.Tag.alarm.repository.AlarmMasterRepository;
 import com.lsmnm.Tag.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +23,13 @@ public class AlarmMasterService {
     /**
      * 알람 마스터 조회
      */
-    public AlarmMasterListResponseDto searchAlarmMasters(AlarmMasterRequestDto requestDto) {
+    public AlarmMasterListResponseDto searchAlarmMasters(AlarmMasterSearchRequestDto requestDto) {
         
         if (requestDto.getPlantCd() == null || requestDto.getPlantCd().isEmpty()) {
             throw new BadRequestException("error.alarmmaster.plantcd.required");
         }
 
-        List<AlarmMasterResponseDto> alarmMasters = alarmMasterRepository.searchAlarmMasters(
+        List<AlarmMasterProjection> projections = alarmMasterRepository.searchAlarmMasters(
                 requestDto.getPlantCd(),
                 getOrDefault(requestDto.getBizChainCd()),
                 getOrDefault(requestDto.getAlarmType()),
@@ -36,17 +38,71 @@ public class AlarmMasterService {
                 getOrDefault(requestDto.getAlarmMsgContents())
         );
 
-        // jqxCb 필드 추가 (false 로 고정)
-        alarmMasters.forEach(alarm -> alarm.setJqxCb("false"));
+        List<AlarmMasterSearchResponseDto> alarmMasters = projections.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        int recordCount = alarmMasters.size();
+        String statusMsg = String.format("[%s] %d record have been selected",
+                java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                recordCount);
 
         return AlarmMasterListResponseDto.builder()
                 .displaymsg(null)
+                .isSuccess(true)
+                .statusMsg(statusMsg)
                 .RK_ALARM(alarmMasters)
                 .build();
     }
 
     /**
-     * null 체크 및 기본값 반환 헬퍼 메서드
+     * Projection -> DTO
+     */
+    private AlarmMasterSearchResponseDto convertToDto(AlarmMasterProjection projection) {
+        return AlarmMasterSearchResponseDto.builder()
+                .plantCd(projection.getPlantCd())
+                .alarmId(projection.getAlarmId())
+                .bizChainCd(projection.getBizChainCd())
+                .alarmType(projection.getAlarmType())
+                .alarmMsgId(projection.getAlarmMsgId())
+                .alarmMsgContents(projection.getAlarmMsgContents())
+                .alarmBlink(projection.getAlarmBlink())
+                .alarmAutoClose(projection.getAlarmAutoClose())
+                .alarmAutoPop(projection.getAlarmAutoPop())
+                .alarmVoice(projection.getAlarmVoice())
+                .alarmInvokeInterval(projection.getAlarmInvokeInterval())
+                .alarmToUser(projection.getAlarmToUser())
+                .alarmToRole(projection.getAlarmToRole())
+                .alarmActionType(projection.getAlarmActionType())
+                .pageLinkId(projection.getPageLinkId())
+                .confMsgId(projection.getConfMsgId())
+                .confMsgType(projection.getConfMsgType())
+                .confMsgContents(projection.getConfMsgContents())
+                .confMsgParam1(projection.getConfMsgParam1())
+                .confMsgParam2(projection.getConfMsgParam2())
+                .confMsgParam3(projection.getConfMsgParam3())
+                .confNow(projection.getConfNow())
+                .alarmDetectInterval(projection.getAlarmDetectInterval())
+                .dispAlarmTm(projection.getDispAlarmTm())
+                .alarmUseYn(projection.getAlarmUseYn())
+                .alarmUsage(projection.getAlarmUsage())
+                .alarmRemarks(projection.getAlarmRemarks())
+                .alarmSmsFl(projection.getAlarmSmsFl())
+                .alarmKakaoFl(projection.getAlarmKakaoFl())
+                .alarmEmailFl(projection.getAlarmEmailFl())
+                .alarmToUser2(projection.getAlarmToUser2())
+                .alarmSmsFl2(projection.getAlarmSmsFl2())
+                .alarmEmailFl2(projection.getAlarmEmailFl2())
+                .alarmSmsTimeFl(projection.getAlarmSmsTimeFl())
+                .alarmKakaoTimeFl(projection.getAlarmKakaoTimeFl())
+                .alarmKakaoTimeCl(projection.getAlarmKakaoTimeCl())
+                .emailTitle(projection.getEmailTitle())
+                .jqxCb("false")
+                .build();
+    }
+
+    /**
+     * null 체크 및 기본값
      */
     private String getOrDefault(String value) {
         return value != null ? value : "";

@@ -3,25 +3,16 @@ package com.lsmnm.Tag.alarm.repository;
 import com.lsmnm.Tag.alarm.entity.AlarmLog;
 import com.lsmnm.Tag.alarm.entity.AlarmLogId;
 import com.lsmnm.Tag.alarm.dto.AlarmUserDto;
-import com.lsmnm.Tag.alarm.dto.AlarmLogResponseDto;
+import com.lsmnm.Tag.alarm.dto.AlarmLogSearchResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface AlarmLogRepository extends JpaRepository<AlarmLog, AlarmLogId> {
-
-    List<AlarmLog> findByIdPlantCd(String plantCd);
-    List<AlarmLog> findByAlarmType(String alarmType);
-    List<AlarmLog> findByConfYn(String confYn);
-    
-    @Query("SELECT a FROM AlarmLog a WHERE a.crtTm BETWEEN :startDate AND :endDate ORDER BY a.crtTm DESC")
-    List<AlarmLog> findByCrtTmBetween(@Param("startDate") LocalDateTime startDate, 
-                                     @Param("endDate") LocalDateTime endDate);
 
     /**
      * alarm.search_alarm_log_user
@@ -95,7 +86,7 @@ public interface AlarmLogRepository extends JpaRepository<AlarmLog, AlarmLogId> 
         group by subquery.plant_cd, subquery.biz_chain_cd, subquery.alarm_id, subquery.alarm_type, subquery.alarm_msg_id, subquery.alarm_dtm, subquery.conf_yn, subquery.conf_dtm, subquery.alarm_msg_contents, subquery.alarm_msg_attrs, subquery.email_send_yn, subquery.sms_send_yn, subquery.kakao_send_yn
         ORDER BY subquery.alarm_dtm desc
         """, nativeQuery = true)
-    List<AlarmLogResponseDto> searchAlarmLogs(
+    List<AlarmLogSearchResponseDto> searchAlarmLogs(
             @Param("plantCd") String plantCd,
             @Param("alarmType") String alarmType,
             @Param("alarmLogId") String alarmLogId,

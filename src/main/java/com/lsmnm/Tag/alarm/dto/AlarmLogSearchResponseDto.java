@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AlarmLogResponseDto {
+public class AlarmLogSearchResponseDto {
     
     private String plantCd;
     private String alarmType;
