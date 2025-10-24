@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "sco_alarm_log")
+@Table(name = "sco_alarm_log", schema = "scom")
 public class AlarmLog {
 
     @EmbeddedId

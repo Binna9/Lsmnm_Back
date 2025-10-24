@@ -1,12 +1,15 @@
 package com.lsmnm.Tag.alarm.service;
 
 import com.lsmnm.Tag.alarm.dto.AlarmLogDto;
-import com.lsmnm.Tag.alarm.dto.AlarmLogSearchDto;
+import com.lsmnm.Tag.alarm.dto.AlarmUserDto;
+import com.lsmnm.Tag.alarm.dto.AlarmLogResponseDto;
+import com.lsmnm.Tag.alarm.dto.AlarmLogSearchRequestDto;
+import com.lsmnm.Tag.alarm.dto.AlarmLogListResponseDto;
 import com.lsmnm.Tag.alarm.entity.AlarmLog;
 import com.lsmnm.Tag.alarm.entity.AlarmLogId;
 import com.lsmnm.Tag.alarm.repository.AlarmLogRepository;
+import com.lsmnm.Tag.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +24,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 @Transactional(readOnly = true)
 public class AlarmLogService {
 
@@ -31,8 +33,8 @@ public class AlarmLogService {
      * 알람 로그 전체 조회
      */
     public List<AlarmLogDto> getAllAlarmLogs() {
-        log.info("전체 알람 로그 조회");
         List<AlarmLog> alarmLogs = alarmLogRepository.findAll();
+        
         return alarmLogs.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -42,7 +44,6 @@ public class AlarmLogService {
      * 복합키로 알람 로그 조회
      */
     public Optional<AlarmLogDto> getAlarmLogById(String plantCd, String alarmLogId) {
-        log.info("알람 로그 조회 - plantCd: {}, alarmLogId: {}", plantCd, alarmLogId);
         AlarmLogId id = AlarmLogId.builder()
                 .plantCd(plantCd)
                 .alarmLogId(alarmLogId)
@@ -56,8 +57,8 @@ public class AlarmLogService {
      * 공장코드로 알람 로그 조회
      */
     public List<AlarmLogDto> getAlarmLogsByPlantCd(String plantCd) {
-        log.info("공장코드별 알람 로그 조회 - plantCd: {}", plantCd);
         List<AlarmLog> alarmLogs = alarmLogRepository.findByIdPlantCd(plantCd);
+
         return alarmLogs.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -67,8 +68,8 @@ public class AlarmLogService {
      * 알람 타입으로 조회
      */
     public List<AlarmLogDto> getAlarmLogsByType(String alarmType) {
-        log.info("알람 타입별 조회 - alarmType: {}", alarmType);
         List<AlarmLog> alarmLogs = alarmLogRepository.findByAlarmType(alarmType);
+
         return alarmLogs.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -78,19 +79,8 @@ public class AlarmLogService {
      * 확인 여부로 조회
      */
     public List<AlarmLogDto> getAlarmLogsByConfYn(String confYn) {
-        log.info("확인 여부별 조회 - confYn: {}", confYn);
         List<AlarmLog> alarmLogs = alarmLogRepository.findByConfYn(confYn);
-        return alarmLogs.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
 
-    /**
-     * 미확인 알람 조회
-     */
-    public List<AlarmLogDto> getUnconfirmedAlarms() {
-        log.info("미확인 알람 조회");
-        List<AlarmLog> alarmLogs = alarmLogRepository.findUnconfirmedAlarms();
         return alarmLogs.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -100,19 +90,16 @@ public class AlarmLogService {
      * 기간별 알람 로그 조회
      */
     public List<AlarmLogDto> getAlarmLogsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        log.info("기간별 알람 로그 조회 - startDate: {}, endDate: {}", startDate, endDate);
+        if (startDate == null || endDate == null) {
+            throw new BadRequestException("error.alarmlog.date.required");
+        }
+        
+        if (startDate.isAfter(endDate)) {
+            throw new BadRequestException("error.alarmlog.date.invalid");
+        }
+        
         List<AlarmLog> alarmLogs = alarmLogRepository.findByCrtTmBetween(startDate, endDate);
-        return alarmLogs.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
 
-    /**
-     * 공장코드와 알람타입으로 조회
-     */
-    public List<AlarmLogDto> getAlarmLogsByPlantCdAndType(String plantCd, String alarmType) {
-        log.info("공장코드와 알람타입으로 조회 - plantCd: {}, alarmType: {}", plantCd, alarmType);
-        List<AlarmLog> alarmLogs = alarmLogRepository.findByIdPlantCdAndAlarmType(plantCd, alarmType);
         return alarmLogs.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -122,7 +109,13 @@ public class AlarmLogService {
      * 최근 알람 로그 조회 (페이징)
      */
     public Page<AlarmLogDto> getRecentAlarmLogs(int page, int size) {
-        log.info("최근 알람 로그 조회 - page: {}, size: {}", page, size);
+        if (page < 0) {
+            throw new BadRequestException("error.pagination.page.invalid");
+        }
+        if (size <= 0) {
+            throw new BadRequestException("error.pagination.size.invalid");
+        }
+        
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "crtTm"));
         Page<AlarmLog> alarmLogPage = alarmLogRepository.findAll(pageable);
         
@@ -130,37 +123,77 @@ public class AlarmLogService {
     }
 
     /**
-     * 검색 조건으로 알람 로그 조회
+     * 알람 사용자 정보 조회 (DTO 방식)
      */
-    public List<AlarmLogDto> searchAlarmLogs(AlarmLogSearchDto searchDto) {
-        log.info("검색 조건으로 알람 로그 조회 - {}", searchDto);
-        
-        List<AlarmLog> alarmLogs;
-        
-        // 검색 조건에 따른 분기
-        if (searchDto.getPlantCd() != null && searchDto.getAlarmType() != null) {
-            alarmLogs = alarmLogRepository.findByIdPlantCdAndAlarmType(
-                    searchDto.getPlantCd(), searchDto.getAlarmType());
-        } else if (searchDto.getPlantCd() != null) {
-            alarmLogs = alarmLogRepository.findByIdPlantCd(searchDto.getPlantCd());
-        } else if (searchDto.getAlarmType() != null) {
-            alarmLogs = alarmLogRepository.findByAlarmType(searchDto.getAlarmType());
-        } else if (searchDto.getConfYn() != null) {
-            alarmLogs = alarmLogRepository.findByConfYn(searchDto.getConfYn());
-        } else if (searchDto.getStartDate() != null && searchDto.getEndDate() != null) {
-            alarmLogs = alarmLogRepository.findByCrtTmBetween(
-                    searchDto.getStartDate(), searchDto.getEndDate());
-        } else {
-            alarmLogs = alarmLogRepository.findRecentAlarms();
+    public List<AlarmUserDto> getAlarmUserByAlarmIdAndDtm(String alarmId, String alarmDtm) {
+        if (alarmId == null || alarmId.isEmpty()) {
+            throw new BadRequestException("error.alarmlog.alarmid.required");
+        }
+        if (alarmDtm == null || alarmDtm.isEmpty()) {
+            throw new BadRequestException("error.alarmlog.alarmdtm.required");
         }
         
-        return alarmLogs.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return alarmLogRepository.findAlarmUserByAlarmIdAndDtm(alarmId, alarmDtm);
     }
 
     /**
-     * Entity를 DTO로 변환
+     * 알람 로그 복합 검색
+     */
+    public AlarmLogListResponseDto searchAlarmLogs(AlarmLogSearchRequestDto requestDto) {
+
+        if (requestDto.getPlantCd() == null || requestDto.getPlantCd().isEmpty()) {
+            throw new BadRequestException("error.alarmlog.plantcd.required");
+        }
+        if (requestDto.getAlarmDtmSta() == null || requestDto.getAlarmDtmSta().isEmpty()) {
+            throw new BadRequestException("error.alarmlog.alarmdtmsta.required");
+        }
+        if (requestDto.getAlarmDtmEnd() == null || requestDto.getAlarmDtmEnd().isEmpty()) {
+            throw new BadRequestException("error.alarmlog.alarmdtmend.required");
+        }
+
+        String alarmType = requestDto.getAlarmType() != null ? requestDto.getAlarmType() : "";
+        String alarmLogId = requestDto.getAlarmLogId() != null ? requestDto.getAlarmLogId() : "";
+        String alarmId = requestDto.getAlarmId() != null ? requestDto.getAlarmId() : "";
+        String alarmMsgId = requestDto.getAlarmMsgId() != null ? requestDto.getAlarmMsgId() : "";
+        String confYn = requestDto.getConfYn() != null ? requestDto.getConfYn() : "";
+        String bizChainCd = requestDto.getBizChainCd() != null ? requestDto.getBizChainCd() : "";
+        String alarmSendType = requestDto.getAlarmSendType() != null ? requestDto.getAlarmSendType() : "";
+        String alarmMsgContents = requestDto.getAlarmMsgContents() != null ? requestDto.getAlarmMsgContents() : "";
+        String alarmMsgAttrs = requestDto.getAlarmMsgAttrs() != null ? requestDto.getAlarmMsgAttrs() : "";
+
+        List<AlarmLogResponseDto> alarmLogs = alarmLogRepository.searchAlarmLogs(
+                requestDto.getPlantCd(),
+                alarmType,
+                alarmLogId,
+                alarmId,
+                alarmMsgId,
+                requestDto.getAlarmDtmSta(),
+                requestDto.getAlarmDtmEnd(),
+                confYn,
+                bizChainCd,
+                alarmSendType,
+                alarmMsgContents,
+                alarmMsgAttrs
+        );
+
+        // jqxCb 필드 추가 (false 로 고정)
+        alarmLogs.forEach(log -> log.setJqxCb("false"));
+
+        int recordCount = alarmLogs.size();
+        String statusMsg = String.format("[%s] %d record have been selected", 
+                java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), 
+                recordCount);
+
+        return AlarmLogListResponseDto.builder()
+                .displaymsg(null)
+                .isSuccess(true)
+                .statusMsg(statusMsg)
+                .rkAlarmLog(alarmLogs)
+                .build();
+    }
+
+    /**
+     * Entity 를 DTO 로 변환
      */
     private AlarmLogDto convertToDto(AlarmLog alarmLog) {
         return AlarmLogDto.builder()

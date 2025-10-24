@@ -1,7 +1,9 @@
 package com.lsmnm.Tag.alarm.controller;
 
 import com.lsmnm.Tag.alarm.dto.AlarmLogDto;
-import com.lsmnm.Tag.alarm.dto.AlarmLogSearchDto;
+import com.lsmnm.Tag.alarm.dto.AlarmUserDto;
+import com.lsmnm.Tag.alarm.dto.AlarmLogSearchRequestDto;
+import com.lsmnm.Tag.alarm.dto.AlarmLogListResponseDto;
 import com.lsmnm.Tag.alarm.service.AlarmLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,6 @@ public class AlarmLogController {
      */
     @GetMapping
     public ResponseEntity<List<AlarmLogDto>> getAllAlarmLogs() {
-        log.info("전체 알람 로그 조회 API 호출");
         List<AlarmLogDto> alarmLogs = alarmLogService.getAllAlarmLogs();
         return ResponseEntity.ok(alarmLogs);
     }
@@ -39,7 +40,6 @@ public class AlarmLogController {
     public ResponseEntity<AlarmLogDto> getAlarmLogById(
             @PathVariable String plantCd,
             @PathVariable String alarmLogId) {
-        log.info("알람 로그 조회 API 호출 - plantCd: {}, alarmLogId: {}", plantCd, alarmLogId);
         Optional<AlarmLogDto> alarmLog = alarmLogService.getAlarmLogById(plantCd, alarmLogId);
         return alarmLog.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -50,7 +50,6 @@ public class AlarmLogController {
      */
     @GetMapping("/plant/{plantCd}")
     public ResponseEntity<List<AlarmLogDto>> getAlarmLogsByPlantCd(@PathVariable String plantCd) {
-        log.info("공장코드별 알람 로그 조회 API 호출 - plantCd: {}", plantCd);
         List<AlarmLogDto> alarmLogs = alarmLogService.getAlarmLogsByPlantCd(plantCd);
         return ResponseEntity.ok(alarmLogs);
     }
@@ -60,7 +59,6 @@ public class AlarmLogController {
      */
     @GetMapping("/type/{alarmType}")
     public ResponseEntity<List<AlarmLogDto>> getAlarmLogsByType(@PathVariable String alarmType) {
-        log.info("알람 타입별 조회 API 호출 - alarmType: {}", alarmType);
         List<AlarmLogDto> alarmLogs = alarmLogService.getAlarmLogsByType(alarmType);
         return ResponseEntity.ok(alarmLogs);
     }
@@ -70,18 +68,7 @@ public class AlarmLogController {
      */
     @GetMapping("/confirmation/{confYn}")
     public ResponseEntity<List<AlarmLogDto>> getAlarmLogsByConfYn(@PathVariable String confYn) {
-        log.info("확인 여부별 조회 API 호출 - confYn: {}", confYn);
         List<AlarmLogDto> alarmLogs = alarmLogService.getAlarmLogsByConfYn(confYn);
-        return ResponseEntity.ok(alarmLogs);
-    }
-
-    /**
-     * 미확인 알람 조회
-     */
-    @GetMapping("/unconfirmed")
-    public ResponseEntity<List<AlarmLogDto>> getUnconfirmedAlarms() {
-        log.info("미확인 알람 조회 API 호출");
-        List<AlarmLogDto> alarmLogs = alarmLogService.getUnconfirmedAlarms();
         return ResponseEntity.ok(alarmLogs);
     }
 
@@ -92,20 +79,7 @@ public class AlarmLogController {
     public ResponseEntity<List<AlarmLogDto>> getAlarmLogsByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-        log.info("기간별 알람 로그 조회 API 호출 - startDate: {}, endDate: {}", startDate, endDate);
         List<AlarmLogDto> alarmLogs = alarmLogService.getAlarmLogsByDateRange(startDate, endDate);
-        return ResponseEntity.ok(alarmLogs);
-    }
-
-    /**
-     * 공장코드와 알람타입으로 조회
-     */
-    @GetMapping("/plant/{plantCd}/type/{alarmType}")
-    public ResponseEntity<List<AlarmLogDto>> getAlarmLogsByPlantCdAndType(
-            @PathVariable String plantCd,
-            @PathVariable String alarmType) {
-        log.info("공장코드와 알람타입으로 조회 API 호출 - plantCd: {}, alarmType: {}", plantCd, alarmType);
-        List<AlarmLogDto> alarmLogs = alarmLogService.getAlarmLogsByPlantCdAndType(plantCd, alarmType);
         return ResponseEntity.ok(alarmLogs);
     }
 
@@ -116,45 +90,28 @@ public class AlarmLogController {
     public ResponseEntity<Page<AlarmLogDto>> getRecentAlarmLogs(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        log.info("최근 알람 로그 조회 API 호출 - page: {}, size: {}", page, size);
         Page<AlarmLogDto> alarmLogPage = alarmLogService.getRecentAlarmLogs(page, size);
         return ResponseEntity.ok(alarmLogPage);
     }
 
     /**
-     * 검색 조건으로 알람 로그 조회
+     * 알람 ID와 날짜로 사용자 정보 조회
      */
-    @PostMapping("/search")
-    public ResponseEntity<List<AlarmLogDto>> searchAlarmLogs(@RequestBody AlarmLogSearchDto searchDto) {
-        log.info("검색 조건으로 알람 로그 조회 API 호출 - {}", searchDto);
-        List<AlarmLogDto> alarmLogs = alarmLogService.searchAlarmLogs(searchDto);
-        return ResponseEntity.ok(alarmLogs);
+    @GetMapping("/users")
+    public ResponseEntity<List<AlarmUserDto>> getAlarmUserByAlarmIdAndDtm(
+            @RequestParam String alarmId,
+            @RequestParam String alarmDtm) {
+        List<AlarmUserDto> alarmUsers = alarmLogService.getAlarmUserByAlarmIdAndDtm(alarmId, alarmDtm);
+        return ResponseEntity.ok(alarmUsers);
     }
 
     /**
-     * Query Parameter로 검색
+     * 알람 로그 검색
      */
-    @GetMapping("/search")
-    public ResponseEntity<List<AlarmLogDto>> searchAlarmLogsByQuery(
-            @RequestParam(required = false) String plantCd,
-            @RequestParam(required = false) String alarmType,
-            @RequestParam(required = false) String confYn,
-            @RequestParam(required = false) String alarmId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-        
-        log.info("Query Parameter로 알람 로그 검색 API 호출");
-        
-        AlarmLogSearchDto searchDto = AlarmLogSearchDto.builder()
-                .plantCd(plantCd)
-                .alarmType(alarmType)
-                .confYn(confYn)
-                .alarmId(alarmId)
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
-        
-        List<AlarmLogDto> alarmLogs = alarmLogService.searchAlarmLogs(searchDto);
-        return ResponseEntity.ok(alarmLogs);
+    @PostMapping("/search")
+    public ResponseEntity<AlarmLogListResponseDto> searchAlarmLogs(
+            @RequestBody AlarmLogSearchRequestDto requestDto) {
+        AlarmLogListResponseDto response = alarmLogService.searchAlarmLogs(requestDto);
+        return ResponseEntity.ok(response);
     }
 }

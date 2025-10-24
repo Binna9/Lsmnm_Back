@@ -70,3 +70,6 @@ public class AlarmLogDto {
     private String mgmtAttr4;
     private String mgmtAttr5;
 }
+
+
+
