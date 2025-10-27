@@ -1,9 +1,6 @@
 package com.lsmnm.Tag.alarm.service;
 
-import com.lsmnm.Tag.alarm.dto.AlarmMasterListResponseDto;
-import com.lsmnm.Tag.alarm.dto.AlarmMasterProjection;
-import com.lsmnm.Tag.alarm.dto.AlarmMasterSearchRequestDto;
-import com.lsmnm.Tag.alarm.dto.AlarmMasterSearchResponseDto;
+import com.lsmnm.Tag.alarm.dto.*;
 import com.lsmnm.Tag.alarm.repository.AlarmMasterRepository;
 import com.lsmnm.Tag.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +40,7 @@ public class AlarmMasterService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
-        // 100개씩 청크로 나누기
+        // 100개씩 끊어서 Response 값 전달
         List<List<AlarmMasterSearchResponseDto>> chunkedList = IntStream.range(0, alarmMasters.size())
                 .boxed()
                 .collect(Collectors.groupingBy(i -> i / 100))
@@ -54,6 +51,7 @@ public class AlarmMasterService {
                         .collect(Collectors.toList()))
                 .collect(Collectors.toList());
 
+        // 조회 데이터 갯수 (statusMsg)
         int recordCount = alarmMasters.size();
         String statusMsg = String.format("[%s] %d record have been selected",
                 java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
@@ -65,6 +63,14 @@ public class AlarmMasterService {
                 .statusMsg(statusMsg)
                 .RK_ALARM(chunkedList)
                 .build();
+    }
+
+    /**
+     * 알람 사용자 정보 조회
+     */
+    public List<AlarmUserResponseDto> getAlarmUser(AlarmUserRequestDto requestDto) {
+        return alarmMasterRepository.findAlarmUser(requestDto.getAlarmUserType() , requestDto.getAlarmUserId(),
+                requestDto.getAlarmUserNm(), requestDto.getAlarmToRole(), requestDto.getAlarmToUser(), requestDto.getAlarmToUser2());
     }
 
     /**

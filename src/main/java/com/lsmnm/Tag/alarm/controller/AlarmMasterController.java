@@ -1,11 +1,12 @@
 package com.lsmnm.Tag.alarm.controller;
 
-import com.lsmnm.Tag.alarm.dto.AlarmMasterListResponseDto;
-import com.lsmnm.Tag.alarm.dto.AlarmMasterSearchRequestDto;
+import com.lsmnm.Tag.alarm.dto.*;
 import com.lsmnm.Tag.alarm.service.AlarmMasterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/alarm-master")
@@ -23,6 +24,17 @@ public class AlarmMasterController {
         AlarmMasterListResponseDto response = alarmMasterService.searchAlarmMasters(requestDto);
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 알람 사용자 정보 조회
+     */
+    @GetMapping("/users")
+    public ResponseEntity<List<AlarmUserResponseDto>> getAlarmUser(@RequestBody AlarmUserRequestDto alarmUserRequestDto) {
+
+        List<AlarmUserResponseDto> alarmUsers = alarmMasterService.getAlarmUser(alarmUserRequestDto);
+
+        return ResponseEntity.ok(alarmUsers);
     }
 }
 

@@ -3,7 +3,6 @@ package com.lsmnm.Tag.alarm.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.io.Serializable;
-import java.util.Objects;
 import lombok.*;
 
 @Embeddable

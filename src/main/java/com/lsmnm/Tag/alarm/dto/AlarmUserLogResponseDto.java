@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AlarmUserDto {
+public class AlarmUserLogResponseDto {
     
     private String recvAddr;
     private String alarmToUser;

@@ -1,9 +1,6 @@
 package com.lsmnm.Tag.alarm.service;
 
-import com.lsmnm.Tag.alarm.dto.AlarmUserDto;
-import com.lsmnm.Tag.alarm.dto.AlarmLogSearchResponseDto;
-import com.lsmnm.Tag.alarm.dto.AlarmLogSearchRequestDto;
-import com.lsmnm.Tag.alarm.dto.AlarmLogListResponseDto;
+import com.lsmnm.Tag.alarm.dto.*;
 import com.lsmnm.Tag.alarm.repository.AlarmLogRepository;
 import com.lsmnm.Tag.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
@@ -20,32 +17,12 @@ public class AlarmLogService {
     private final AlarmLogRepository alarmLogRepository;
 
     /**
-     * 알람 사용자 정보 조회
-     */
-    public List<AlarmUserDto> getAlarmUserByAlarmIdAndDtm(String alarmId, String alarmDtm) {
-        if (alarmId == null || alarmId.isEmpty()) {
-            throw new BadRequestException("error.alarmlog.alarmid.required");
-        }
-        if (alarmDtm == null || alarmDtm.isEmpty()) {
-            throw new BadRequestException("error.alarmlog.alarmdtm.required");
-        }
-
-        return alarmLogRepository.findAlarmUserByAlarmIdAndDtm(alarmId, alarmDtm);
-    }
-
-    /**
      * 알람 로그 복합 검색
      */
     public AlarmLogListResponseDto searchAlarmLogs(AlarmLogSearchRequestDto requestDto) {
 
         if (requestDto.getPlantCd() == null || requestDto.getPlantCd().isEmpty()) {
             throw new BadRequestException("error.alarmlog.plantcd.required");
-        }
-        if (requestDto.getAlarmDtmSta() == null || requestDto.getAlarmDtmSta().isEmpty()) {
-            throw new BadRequestException("error.alarmlog.alarmdtmsta.required");
-        }
-        if (requestDto.getAlarmDtmEnd() == null || requestDto.getAlarmDtmEnd().isEmpty()) {
-            throw new BadRequestException("error.alarmlog.alarmdtmend.required");
         }
 
         List<AlarmLogSearchResponseDto> alarmLogs = alarmLogRepository.searchAlarmLogs(
@@ -63,7 +40,6 @@ public class AlarmLogService {
                 getOrDefault(requestDto.getAlarmMsgAttrs())
         );
 
-        // jqxCb 필드 추가 (false 로 고정)
         alarmLogs.forEach(log -> log.setJqxCb("false"));
 
         int recordCount = alarmLogs.size();
@@ -77,6 +53,14 @@ public class AlarmLogService {
                 .statusMsg(statusMsg)
                 .rkAlarmLog(alarmLogs)
                 .build();
+    }
+
+    /**
+     * 알람 사용자 로그 정보 조회
+     */
+    public List<AlarmUserLogResponseDto> getAlarmLogUser(AlarmUserLogRequestDto requestDto) {
+
+        return alarmLogRepository.findAlarmLogUserByAlarmIdAndDtm(requestDto.getAlarmId(), requestDto.getAlarmDtm());
     }
 
     /**

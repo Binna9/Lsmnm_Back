@@ -1,8 +1,8 @@
 package com.lsmnm.Tag.alarm.repository;
 
+import com.lsmnm.Tag.alarm.dto.AlarmUserLogResponseDto;
 import com.lsmnm.Tag.alarm.entity.AlarmLog;
 import com.lsmnm.Tag.alarm.entity.AlarmLogId;
-import com.lsmnm.Tag.alarm.dto.AlarmUserDto;
 import com.lsmnm.Tag.alarm.dto.AlarmLogSearchResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,23 +15,7 @@ import java.util.List;
 public interface AlarmLogRepository extends JpaRepository<AlarmLog, AlarmLogId> {
 
     /**
-     * alarm.search_alarm_log_user
-     */
-    @Query(value = """
-        SELECT a.recv_addr as recvAddr,
-               b.user_nm as alarmToUser
-        FROM scom.sco_alarm_log a,
-             scom.sco_user b
-        WHERE a.alarm_id = :alarmId
-        AND a.alarm_dtm = TO_CHAR(TO_DATE(:alarmDtm, 'YYYY-MM-DD HH24:MI:SS'),'YYYYMMDDHH24MISS')
-        AND a.recv_addr = b.user_id
-        """, nativeQuery = true)
-    List<AlarmUserDto> findAlarmUserByAlarmIdAndDtm(
-            @Param("alarmId") String alarmId,
-            @Param("alarmDtm") String alarmDtm);
-
-    /**
-     * 알람 로그 검색 (복합 검색)
+     * 알람 로그 검색
      */
     @Query(value = """
         SELECT plant_cd as plantCd
@@ -99,4 +83,20 @@ public interface AlarmLogRepository extends JpaRepository<AlarmLog, AlarmLogId> 
             @Param("alarmSendType") String alarmSendType,
             @Param("alarmMsgContents") String alarmMsgContents,
             @Param("alarmMsgAttrs") String alarmMsgAttrs);
+
+    /**
+     * 알람 로그 사용자 검색
+     */
+    @Query(value = """
+            SELECT a.recv_addr as recvAddr,
+                   b.user_nm as alarmToUser
+            FROM scom.sco_alarm_log a,
+                 scom.sco_user b
+            WHERE a.alarm_id = :alarmId
+            AND a.alarm_dtm = TO_CHAR(TO_DATE(:alarmDtm, 'YYYY-MM-DD HH24:MI:SS'),'YYYYMMDDHH24MISS')
+            AND a.recv_addr = b.user_id
+            """, nativeQuery = true)
+    List<AlarmUserLogResponseDto> findAlarmLogUserByAlarmIdAndDtm(
+            @Param("alarmId") String alarmId,
+            @Param("alarmDtm") String alarmDtm);
 }
