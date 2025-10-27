@@ -14,11 +14,5 @@ public class InternalServerException extends RuntimeException {
         this.messageKey = messageKey;
         this.status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
-
-    public InternalServerException(String messageKey, Throwable cause) {
-        super(messageKey, cause);
-        this.messageKey = messageKey;
-        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    }
 }
 

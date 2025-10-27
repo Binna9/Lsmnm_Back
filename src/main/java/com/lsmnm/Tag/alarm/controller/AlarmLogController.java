@@ -19,7 +19,7 @@ public class AlarmLogController {
     private final AlarmLogService alarmLogService;
 
     /**
-     * 알람 로그 검색
+     * 알람 로그 조회
      */
     @PostMapping("/search")
     public ResponseEntity<AlarmLogListResponseDto> searchAlarmLogs(@RequestBody AlarmLogSearchRequestDto requestDto) {
@@ -32,7 +32,7 @@ public class AlarmLogController {
     /**
      * 알람 로그 사용자 정보 조회
      */
-    @GetMapping("/log-users")
+    @GetMapping("/users")
     public ResponseEntity<List<AlarmUserLogResponseDto>> getAlarmLogUser(@RequestBody AlarmUserLogRequestDto alarmUserLogRequestDto) {
 
         List<AlarmUserLogResponseDto> alarmLogUsers = alarmLogService.getAlarmLogUser(alarmUserLogRequestDto);
