@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +25,14 @@ public class AlarmLogService {
         if (requestDto.getPlantCd() == null || requestDto.getPlantCd().isEmpty()) {
             throw new BadRequestException("error.alarmlog.plantcd.required");
         }
+        if (requestDto.getAlarmDtmSta() == null || requestDto.getAlarmDtmSta().isEmpty()) {
+            throw new BadRequestException("error.alarmlog.alarmdtmsta.required");
+        }
+        if (requestDto.getAlarmDtmEnd() == null || requestDto.getAlarmDtmEnd().isEmpty()) {
+            throw new BadRequestException("error.alarmlog.alarmdtmend.required");
+        }
 
-        List<AlarmLogSearchResponseDto> alarmLogs = alarmLogRepository.searchAlarmLogs(
+        List<AlarmLogProjection> projections = alarmLogRepository.searchAlarmLogs(
                 requestDto.getPlantCd(),
                 getOrDefault(requestDto.getAlarmType()),
                 getOrDefault(requestDto.getAlarmLogId()),
@@ -39,6 +46,10 @@ public class AlarmLogService {
                 getOrDefault(requestDto.getAlarmMsgContents()),
                 getOrDefault(requestDto.getAlarmMsgAttrs())
         );
+
+        List<AlarmLogSearchResponseDto> alarmLogs = projections.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
 
         alarmLogs.forEach(log -> log.setJqxCb("false"));
 
@@ -61,6 +72,28 @@ public class AlarmLogService {
     public List<AlarmUserLogResponseDto> getAlarmLogUser(AlarmUserLogRequestDto requestDto) {
 
         return alarmLogRepository.findAlarmLogUserByAlarmIdAndDtm(requestDto.getAlarmId(), requestDto.getAlarmDtm());
+    }
+
+    /**
+     * Projection -> DTO
+     */
+    private AlarmLogSearchResponseDto convertToDto(AlarmLogProjection projection) {
+        return AlarmLogSearchResponseDto.builder()
+                .plantCd(projection.getPlantCd())
+                .bizChainCd(projection.getBizChainCd())
+                .alarmLogId(projection.getAlarmLogId())
+                .alarmId(projection.getAlarmId())
+                .alarmType(projection.getAlarmType())
+                .alarmMsgId(projection.getAlarmMsgId())
+                .alarmDtm(projection.getAlarmDtm())
+                .confYn(projection.getConfYn())
+                .confDtm(projection.getConfDtm())
+                .alarmMsgContents(projection.getAlarmMsgContents())
+                .alarmMsgAttrs(projection.getAlarmMsgAttrs())
+                .emailSendYn(projection.getEmailSendYn())
+                .smsSendYn(projection.getSmsSendYn())
+                .kakaoSendYn(projection.getKakaoSendYn())
+                .build();
     }
 
     /**

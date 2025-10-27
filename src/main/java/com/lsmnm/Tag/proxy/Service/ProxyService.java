@@ -17,14 +17,14 @@ public class ProxyService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         // Origin 헤더 - 외부 서버 도메인으로 설정
-        headers.set("Origin", "https://mesdev.lsmnm.com");
+        headers.set("Origin", "http://mesdev.lsmnm.com");
 
         String contentType = request.getContentType();
         if (contentType == null || contentType.isEmpty()) {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         }
 
-        String refererUrl = "https://mesdev.lsmnm.com/" + module;
+        String refererUrl = "http://mesdev.lsmnm.com/" + module;
 
         headers.set("Referer", refererUrl);
 

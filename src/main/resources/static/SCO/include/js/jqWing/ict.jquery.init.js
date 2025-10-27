@@ -226,7 +226,62 @@ function fc_applyAuthority() {
 	window.gwMultiLang.isRunMain = false;
 	window.gwJsonParam[ 'USER_ID' ] = window.gwMesEnv.user.id;
 	window.gwJsonParam[ 'PGM_ID'  ] = window.gwMesEnv.user.pgmId;
-	window.gwJsonParam[ 'MNU_ID'  ] = fc_getCurrentMenuId( parent.window.mainTab );
+	
+	fc_getCurrentMenuIdAsync();
+};
+
+function fc_getCurrentMenuIdAsync() {
+	var mnuId = '';
+	
+	// 직접 접근 시도 (같은 origin인 경우)
+	try {
+		if ( parent.window && parent.window.mainTab ) {
+			mnuId = fc_getCurrentMenuId( parent.window.mainTab );
+		}
+	} catch ( e ) {
+		// Cross-origin 오류 시 postMessage 사용
+		fc_requestMenuIdFromParent();
+		return;
+	}
+	
+	// 메뉴 ID를 받았으면 권한 적용 계속 진행
+	if ( mnuId ) {
+		fc_proceedWithAuthority( mnuId );
+	} else {
+		fc_requestMenuIdFromParent();
+	}
+};
+
+function fc_requestMenuIdFromParent() {
+	try {
+		var messageHandler = function( event ) {
+			 if ( event.origin !== 'http://mesdev.lsmnm.com' && event.origin !== 'http://ds.mes.lsmnm.com' ) return;
+			
+			if ( event.data && event.data.type === 'RESPONSE_MENU_ID' ) {
+				var mnuId = event.data.menuId || '';
+				fc_proceedWithAuthority( mnuId );
+			}
+		};
+		
+		if ( window.addEventListener ) {
+			window.addEventListener( 'message', messageHandler, { once: true } );
+		} else {
+			window.addEventListener( 'message', messageHandler );
+		}
+		
+		try {
+			parent.postMessage({ type: 'REQUEST_MENU_ID' }, 'http://mesdev.lsmnm.com' );
+		} catch ( e ) {
+			fc_proceedWithAuthority( '' );
+		}
+	} catch ( e ) {
+		fc_showLog( 1, 'postMessage error: ' + e.message );
+		fc_proceedWithAuthority( '' );
+	}
+};
+
+function fc_proceedWithAuthority( mnuId ) {
+	window.gwJsonParam[ 'MNU_ID'  ] = mnuId;
 	window.gwJsonParam[ 'LANG_CD' ] = window.gwMesEnv.lang.cd;
 	window.gwJsonParam[ 'LINE_CD' ] = window.gwMesEnv.user.lineCd;
 
@@ -303,9 +358,8 @@ function fc_applyAuthority() {
 		fc_setSessionItem( 'GW_OPER_DT', new Date() ); //add 2018.9.7
 	};
 
+};
 
-
-}; // end of fc_applyAuthority
 function fc_getAuthority( sMode ) {
 	var flag = false;
 	switch ( sMode ) {

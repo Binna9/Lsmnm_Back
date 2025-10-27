@@ -6,35 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/view")
-public class ViewController {
-
-    /**
-     * 알람 DashBoard (MAIN) - DONE
-     * GET/VIEW/BDP0000
-     */
-    @GetMapping("/BDP0000")
-    public String BDP0000Page(Model model) {
-        return "BDP/BDP0000";
-    }
-
-    /**
-     * 알람 관리 (MAIN) - DONE
-     * GET/VIEW/BDP0040
-     */
-    @GetMapping("/BDP0040")
-    public String bdp0040Page(Model model) {
-        return "BDP/BDP0040";
-    }
-
-    /**
-     * 알람 로그 (MAIN) - DONE
-     * GET/VIEW/BDP0060
-     */
-    @GetMapping("/BDP0060")
-    public String bdp0060Page(Model model) {
-        return "BDP/BDP0060";
-    }
+@RequestMapping("T")
+public class TagViewController {
 
     /**
      * Tag Chart/Data 조회 (MAIN) - DONE
@@ -52,15 +25,6 @@ public class ViewController {
     @GetMapping("/BDP7070")
     public String bdp7070Page(Model model) {
         return "BDP/BDP7070";
-    }
-
-    /**
-     * 알람 수신자 등록 (SUB)
-     * GET/VIEW/SCOA0050 - DONE
-     */
-    @GetMapping("/SCOA0050")
-    public String SCOA0050Page(Model model) {
-        return "BDP/SCOA0050";
     }
 
     /**

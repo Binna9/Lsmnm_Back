@@ -2,7 +2,6 @@ package com.lsmnm.Tag.alarm.service;
 
 import com.lsmnm.Tag.alarm.dto.*;
 import com.lsmnm.Tag.alarm.repository.AlarmMasterRepository;
-import com.lsmnm.Tag.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +21,6 @@ public class AlarmMasterService {
      * 알람 마스터 조회
      */
     public AlarmMasterListResponseDto searchAlarmMasters(AlarmMasterSearchRequestDto requestDto) {
-        
-        if (requestDto.getPlantCd() == null || requestDto.getPlantCd().isEmpty()) {
-            throw new BadRequestException("error.alarmmaster.plantcd.required");
-        }
 
         List<AlarmMasterProjection> projections = alarmMasterRepository.searchAlarmMasters(
                 requestDto.getPlantCd(),

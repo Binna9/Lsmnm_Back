@@ -23,7 +23,7 @@ public class ProxyController {
         this.proxyService = proxyService;
     }
 
-    private final String EXTERNAL_API_BASE = "https://mesdev.lsmnm.com";
+    private final String EXTERNAL_API_BASE = "http://mesdev.lsmnm.com";
 
     /**
      * 범용 jqGridJSON 프록시 - fc_submit 함수에서 호출하는 API 처리

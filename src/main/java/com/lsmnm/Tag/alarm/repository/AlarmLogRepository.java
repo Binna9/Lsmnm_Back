@@ -1,9 +1,9 @@
 package com.lsmnm.Tag.alarm.repository;
 
+import com.lsmnm.Tag.alarm.dto.AlarmLogProjection;
 import com.lsmnm.Tag.alarm.dto.AlarmUserLogResponseDto;
 import com.lsmnm.Tag.alarm.entity.AlarmLog;
 import com.lsmnm.Tag.alarm.entity.AlarmLogId;
-import com.lsmnm.Tag.alarm.dto.AlarmLogSearchResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -56,7 +56,7 @@ public interface AlarmLogRepository extends JpaRepository<AlarmLog, AlarmLogId> 
                AND (:alarmLogId IS NULL OR :alarmLogId = '' OR ALARM_LOG_ID like :alarmLogId || '%')
                AND (:alarmId IS NULL OR :alarmId = '' OR a.ALARM_ID = :alarmId)
                AND (:alarmMsgId IS NULL OR :alarmMsgId = '' OR a.ALARM_MSG_ID = :alarmMsgId)
-               and alarm_dtm between TO_TIMESTAMP(:alarmDtmSta, 'YYYY-MM-DD HH24:MI:SS') and TO_TIMESTAMP(:alarmDtmEnd, 'YYYY-MM-DD HH24:MI:SS')
+               and alarm_dtm between TO_TIMESTAMP(:alarmDtmSta, 'YYYYMMDDHH24MISS') and TO_TIMESTAMP(:alarmDtmEnd, 'YYYYMMDDHH24MISS')
                and COALESCE(CONF_YN,'N') = COALESCE(:confYn, CONF_YN, 'N')
                and a.ALARM_MSG_ID = b.msg_id
                and a.alarm_id = c.alarm_id
@@ -70,7 +70,7 @@ public interface AlarmLogRepository extends JpaRepository<AlarmLog, AlarmLogId> 
         group by subquery.plant_cd, subquery.biz_chain_cd, subquery.alarm_id, subquery.alarm_type, subquery.alarm_msg_id, subquery.alarm_dtm, subquery.conf_yn, subquery.conf_dtm, subquery.alarm_msg_contents, subquery.alarm_msg_attrs, subquery.email_send_yn, subquery.sms_send_yn, subquery.kakao_send_yn
         ORDER BY subquery.alarm_dtm desc
         """, nativeQuery = true)
-    List<AlarmLogSearchResponseDto> searchAlarmLogs(
+    List<AlarmLogProjection> searchAlarmLogs(
             @Param("plantCd") String plantCd,
             @Param("alarmType") String alarmType,
             @Param("alarmLogId") String alarmLogId,
