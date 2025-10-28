@@ -1,4 +1,4 @@
-package com.lsmnm.Tag.chart.dto;
+package com.lsmnm.Tag.T.dto;
 
 public class ChartRequestDto {
 }

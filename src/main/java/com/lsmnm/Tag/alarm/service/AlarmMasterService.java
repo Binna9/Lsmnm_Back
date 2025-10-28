@@ -15,7 +15,6 @@ import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class AlarmMasterService {
 
     private final AlarmMasterRepository alarmMasterRepository;
@@ -23,6 +22,7 @@ public class AlarmMasterService {
     /**
      * 알람 마스터 조회
      */
+    @Transactional
     public AlarmMasterListResponseDto searchAlarmMasters(AlarmMasterSearchRequestDto requestDto) {
 
         List<AlarmMasterProjection> projections = alarmMasterRepository.searchAlarmMasters(
@@ -65,6 +65,7 @@ public class AlarmMasterService {
     /**
      * 알람 사용자 정보 조회
      */
+    @Transactional
     public List<AlarmUserResponseDto> getAlarmUser(AlarmUserRequestDto requestDto) {
 
         var type   = requestDto.getAlarmUserType();
@@ -80,6 +81,7 @@ public class AlarmMasterService {
     /**
      * 알람 그룹 정보 조회
      */
+    @Transactional
     public List<AlarmGroupResponseDto> getAlarmGroup(AlarmGroupRequestDto requestDto) {
 
         var type = Optional.ofNullable(requestDto.getAlarmGroupType())

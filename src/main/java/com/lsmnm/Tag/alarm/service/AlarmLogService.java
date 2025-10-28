@@ -15,7 +15,6 @@ import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class AlarmLogService {
 
     private final AlarmLogRepository alarmLogRepository;
@@ -23,6 +22,7 @@ public class AlarmLogService {
     /**
      * 알람 로그 검색
      */
+    @Transactional
     public AlarmLogListResponseDto searchAlarmLogs(AlarmLogSearchRequestDto requestDto) {
 
             String alarmType      = toNullIfEmpty(requestDto.getAlarmType());
@@ -83,6 +83,7 @@ public class AlarmLogService {
     /**
      * 알람 사용자 로그 정보 조회
      */
+    @Transactional
     public List<AlarmUserLogResponseDto> getAlarmLogUser(AlarmUserLogRequestDto requestDto) {
 
         var id = Optional.ofNullable(requestDto.getAlarmId())
@@ -120,14 +121,7 @@ public class AlarmLogService {
     }
 
     /**
-     * null 체크 및 기본값
-     */
-    private String getOrDefault(String value) {
-        return value != null ? value : "";
-    }
-
-    /**
-     * 빈 문자열을 null 로 변환 (PostgreSQL 파라미터 타입 추론 오류 방지)
+     * 빈 문자열을 null 로 변환
      */
     private String toNullIfEmpty(String value) {
         return StringUtils.hasText(value) ? value : null;
