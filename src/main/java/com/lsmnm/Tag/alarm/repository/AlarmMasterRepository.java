@@ -1,5 +1,6 @@
 package com.lsmnm.Tag.alarm.repository;
 
+import com.lsmnm.Tag.alarm.dto.AlarmGroupResponseDto;
 import com.lsmnm.Tag.alarm.dto.AlarmMasterProjection;
 import com.lsmnm.Tag.alarm.dto.AlarmUserResponseDto;
 import com.lsmnm.Tag.alarm.entity.AlarmMaster;
@@ -101,6 +102,22 @@ public interface AlarmMasterRepository extends JpaRepository<AlarmMaster, AlarmM
             @Param("alarmToRole") String alarmToRole,
             @Param("alarmToUser") String alarmToUser,
             @Param("alarmToUser2") String alarmToUser2);
+
+    /**
+     * 알람 그룹 검색
+     */
+    @Query(value = """
+               SELECT B.ALARM_GRP_ID, MAX(A.ALARM_GRP_NM) AS ALARM_GRP_NM
+                                	  FROM scom.sco_alarm_group_master A
+                                	     , scom.sco_alarm_group_detail B
+                                	 WHERE A.PLANT_CD    	= B.PLANT_CD
+                                	   AND A.ALARM_GRP_ID   = B.ALARM_GRP_ID
+                                	   AND A.ALARM_GRP_TYPE = B.ALARM_GRP_TYPE
+                                	   AND A.ALARM_GRP_TYPE = :ALARM_GRP_TYPE
+                                	 GROUP BY B.ALARM_GRP_ID
+                                	 ORDER BY B.ALARM_GRP_ID
+            """, nativeQuery = true)
+    List<AlarmGroupResponseDto> findAlarmGroup(@Param("alarmGroupType") String alarmUserType);
 }
 
 

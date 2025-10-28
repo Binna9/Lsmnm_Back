@@ -1,12 +1,9 @@
 package com.lsmnm.Tag.alarm.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
 @Builder
 public class AlarmUserLogRequestDto {

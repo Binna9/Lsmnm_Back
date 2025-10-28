@@ -5,8 +5,8 @@ import lombok.*;
 
 import java.util.List;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
 @Builder
 public class AlarmMasterListResponseDto {

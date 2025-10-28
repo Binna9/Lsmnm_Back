@@ -36,5 +36,13 @@ public class AlarmMasterController {
 
         return ResponseEntity.ok(alarmUsers);
     }
+
+    @GetMapping("/groups")
+    public ResponseEntity<List<AlarmGroupResponseDto>> getAlarmGroup(@RequestBody AlarmGroupRequestDto alarmGroupRequestDto) {
+
+        List<AlarmGroupResponseDto> alarmGroups = alarmMasterService.getAlarmGroup(alarmGroupRequestDto);
+
+        return ResponseEntity.ok(alarmGroups);
+    }
 }
 

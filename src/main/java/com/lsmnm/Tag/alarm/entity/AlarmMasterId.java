@@ -16,7 +16,6 @@ public class AlarmMasterId implements Serializable {
 
     @Column(name = "plant_cd")
     private String plantCd;
-
     @Column(name = "alarm_id")
     private String alarmId;
 }

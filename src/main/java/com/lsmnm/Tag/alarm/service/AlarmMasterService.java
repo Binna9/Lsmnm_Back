@@ -2,6 +2,7 @@ package com.lsmnm.Tag.alarm.service;
 
 import com.lsmnm.Tag.alarm.dto.*;
 import com.lsmnm.Tag.alarm.repository.AlarmMasterRepository;
+import com.lsmnm.Tag.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,6 +67,18 @@ public class AlarmMasterService {
     public List<AlarmUserResponseDto> getAlarmUser(AlarmUserRequestDto requestDto) {
         return alarmMasterRepository.findAlarmUser(requestDto.getAlarmUserType() , requestDto.getAlarmUserId(),
                 requestDto.getAlarmUserNm(), requestDto.getAlarmToRole(), requestDto.getAlarmToUser(), requestDto.getAlarmToUser2());
+    }
+
+    /**
+     * 알람 그룹 정보 조회
+     */
+    public List<AlarmGroupResponseDto> getAlarmGroup(AlarmGroupRequestDto requestDto) {
+
+        if(requestDto.getAlarmGroupType() == null || requestDto.getAlarmGroupType().isEmpty()) {
+            throw new BadRequestException("Alarm group type is required");
+        }
+
+        return alarmMasterRepository.findAlarmGroup(requestDto.getAlarmGroupType());
     }
 
     /**

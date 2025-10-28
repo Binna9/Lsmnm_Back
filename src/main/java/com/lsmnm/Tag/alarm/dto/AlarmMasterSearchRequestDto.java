@@ -2,8 +2,8 @@ package com.lsmnm.Tag.alarm.dto;
 
 import lombok.*;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
 @Builder
 public class AlarmMasterSearchRequestDto {

@@ -18,18 +18,12 @@ public class AlarmLogService {
     private final AlarmLogRepository alarmLogRepository;
 
     /**
-     * 알람 로그 복합 검색
+     * 알람 로그 검색
      */
     public AlarmLogListResponseDto searchAlarmLogs(AlarmLogSearchRequestDto requestDto) {
 
         if (requestDto.getPlantCd() == null || requestDto.getPlantCd().isEmpty()) {
             throw new BadRequestException("error.alarmlog.plantcd.required");
-        }
-        if (requestDto.getAlarmDtmSta() == null || requestDto.getAlarmDtmSta().isEmpty()) {
-            throw new BadRequestException("error.alarmlog.alarmdtmsta.required");
-        }
-        if (requestDto.getAlarmDtmEnd() == null || requestDto.getAlarmDtmEnd().isEmpty()) {
-            throw new BadRequestException("error.alarmlog.alarmdtmend.required");
         }
 
         List<AlarmLogProjection> projections = alarmLogRepository.searchAlarmLogs(
@@ -51,7 +45,7 @@ public class AlarmLogService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
-        alarmLogs.forEach(log -> log.setJqxCb("false"));
+        alarmLogs.forEach(log -> log.setJqxCb(false));
 
         int recordCount = alarmLogs.size();
         String statusMsg = String.format("[%s] %d record have been selected",
@@ -70,6 +64,13 @@ public class AlarmLogService {
      * 알람 사용자 로그 정보 조회
      */
     public List<AlarmUserLogResponseDto> getAlarmLogUser(AlarmUserLogRequestDto requestDto) {
+
+        if (requestDto.getAlarmId() == null || requestDto.getAlarmId().isEmpty()) {
+            throw new BadRequestException("error.alarmlog.plantcd.required");
+        }
+        if (requestDto.getAlarmDtm() == null || requestDto.getAlarmDtm().isEmpty()) {
+            throw new BadRequestException("error.alarmlog.plantcd.required");
+        }
 
         return alarmLogRepository.findAlarmLogUserByAlarmIdAndDtm(requestDto.getAlarmId(), requestDto.getAlarmDtm());
     }
