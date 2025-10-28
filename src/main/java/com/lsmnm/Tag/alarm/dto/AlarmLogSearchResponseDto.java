@@ -5,6 +5,7 @@ import lombok.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class AlarmLogSearchResponseDto {
@@ -15,8 +16,6 @@ public class AlarmLogSearchResponseDto {
     private String alarmType;
     @JsonProperty("ALARM_LOG_ID")
     private String alarmLogId;
-    @JsonProperty("JQX_CB")
-    private Boolean jqxCb;
     @JsonProperty("ALARM_DTM")
     private String alarmDtm;
     @JsonProperty("ALARM_MSG_CONTENTS")
@@ -39,5 +38,7 @@ public class AlarmLogSearchResponseDto {
     private String confDtm;
     @JsonProperty("ALARM_MSG_ATTRS")
     private String alarmMsgAttrs;
+    @JsonProperty("JQX_CB")
+    private Boolean jqxCb;
 }
 

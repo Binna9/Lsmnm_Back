@@ -5,6 +5,7 @@ import lombok.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class AlarmMasterSearchResponseDto {
@@ -84,5 +85,5 @@ public class AlarmMasterSearchResponseDto {
     @JsonProperty("EMAIL_TITLE")
     private String emailTitle;
     @JsonProperty("JQX_CB")
-    private String jqxCb;
+    private Boolean jqxCb;
 }

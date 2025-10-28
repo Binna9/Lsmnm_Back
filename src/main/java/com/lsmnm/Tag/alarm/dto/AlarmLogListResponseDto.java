@@ -18,6 +18,6 @@ public class AlarmLogListResponseDto {
     @JsonProperty("statusMsg")
     private String statusMsg;
     @JsonProperty("RK_ALARM_LOG")
-    private List<AlarmLogSearchResponseDto> rkAlarmLog;
+    private List<List<AlarmLogSearchResponseDto>> rkAlarmLog;
 }
 

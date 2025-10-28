@@ -21,6 +21,6 @@ public class AlarmMasterListResponseDto {
     private String statusMsg;
     
     @JsonProperty("RK_ALARM")
-    private List<List<AlarmMasterSearchResponseDto>> RK_ALARM;
+    private List<List<AlarmMasterSearchResponseDto>> rkAlarm;
 }
 

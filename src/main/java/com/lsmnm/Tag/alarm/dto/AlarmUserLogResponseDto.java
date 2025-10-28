@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Getter
-@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class AlarmUserLogResponseDto {
@@ -13,8 +13,15 @@ public class AlarmUserLogResponseDto {
     private String recvAddr;
     @JsonProperty("ALARM_TO_USER")
     private String alarmToUser;
+    @Builder.Default
     @JsonProperty("JQX_CB")
-    private String jqxCb;
+    private Boolean jqxCb = false;
+
+    public AlarmUserLogResponseDto (String recvAddr, String alarmToUser) {
+            this.recvAddr = recvAddr;
+            this.alarmToUser = alarmToUser;
+            jqxCb = false;
+    }
 }
 
 

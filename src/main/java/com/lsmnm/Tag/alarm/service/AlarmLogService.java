@@ -6,9 +6,12 @@ import com.lsmnm.Tag.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -22,30 +25,47 @@ public class AlarmLogService {
      */
     public AlarmLogListResponseDto searchAlarmLogs(AlarmLogSearchRequestDto requestDto) {
 
-        if (requestDto.getPlantCd() == null || requestDto.getPlantCd().isEmpty()) {
-            throw new BadRequestException("error.alarmlog.plantcd.required");
-        }
+            String alarmType      = toNullIfEmpty(requestDto.getAlarmType());
+            String alarmLogId     = toNullIfEmpty(requestDto.getAlarmLogId());
+            String alarmId        = toNullIfEmpty(requestDto.getAlarmId());
+            String alarmMsgId     = toNullIfEmpty(requestDto.getAlarmMsgId());
+            String confYn         = toNullIfEmpty(requestDto.getConfYn());
+            String bizChainCd     = toNullIfEmpty(requestDto.getBizChainCd());
+            String alarmSendType  = toNullIfEmpty(requestDto.getAlarmSendType());
+            String alarmMsgCont   = toNullIfEmpty(requestDto.getAlarmMsgContents());
+            String alarmMsgAttrs  = toNullIfEmpty(requestDto.getAlarmMsgAttrs());
+            String alarmDtmSta    = toNullIfEmpty(requestDto.getAlarmDtmSta());
+            String alarmDtmEnd    = toNullIfEmpty(requestDto.getAlarmDtmEnd());
 
         List<AlarmLogProjection> projections = alarmLogRepository.searchAlarmLogs(
                 requestDto.getPlantCd(),
-                getOrDefault(requestDto.getAlarmType()),
-                getOrDefault(requestDto.getAlarmLogId()),
-                getOrDefault(requestDto.getAlarmId()),
-                getOrDefault(requestDto.getAlarmMsgId()),
-                requestDto.getAlarmDtmSta(),
-                requestDto.getAlarmDtmEnd(),
-                getOrDefault(requestDto.getConfYn()),
-                getOrDefault(requestDto.getBizChainCd()),
-                getOrDefault(requestDto.getAlarmSendType()),
-                getOrDefault(requestDto.getAlarmMsgContents()),
-                getOrDefault(requestDto.getAlarmMsgAttrs())
+                alarmType,
+                alarmLogId,
+                alarmId,
+                alarmMsgId,
+                alarmDtmSta,
+                alarmDtmEnd,
+                confYn,
+                bizChainCd,
+                alarmSendType,
+                alarmMsgCont,
+                alarmMsgAttrs
         );
 
         List<AlarmLogSearchResponseDto> alarmLogs = projections.stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
 
-        alarmLogs.forEach(log -> log.setJqxCb(false));
+        // 100개씩 끊어서 Response 값 전달
+        List<List<AlarmLogSearchResponseDto>> chunkedList = IntStream.range(0, alarmLogs.size())
+                .boxed()
+                .collect(Collectors.groupingBy(i -> i / 100))
+                .values()
+                .stream()
+                .map(indices -> indices.stream()
+                        .map(alarmLogs::get)
+                        .collect(Collectors.toList()))
+                .collect(Collectors.toList());
 
         int recordCount = alarmLogs.size();
         String statusMsg = String.format("[%s] %d record have been selected",
@@ -56,7 +76,7 @@ public class AlarmLogService {
                 .displaymsg(null)
                 .isSuccess(true)
                 .statusMsg(statusMsg)
-                .rkAlarmLog(alarmLogs)
+                .rkAlarmLog(chunkedList)
                 .build();
     }
 
@@ -65,14 +85,15 @@ public class AlarmLogService {
      */
     public List<AlarmUserLogResponseDto> getAlarmLogUser(AlarmUserLogRequestDto requestDto) {
 
-        if (requestDto.getAlarmId() == null || requestDto.getAlarmId().isEmpty()) {
-            throw new BadRequestException("error.alarmlog.plantcd.required");
-        }
-        if (requestDto.getAlarmDtm() == null || requestDto.getAlarmDtm().isEmpty()) {
-            throw new BadRequestException("error.alarmlog.plantcd.required");
-        }
+        var id = Optional.ofNullable(requestDto.getAlarmId())
+                .filter(StringUtils::hasText)
+                .orElseThrow(() -> new BadRequestException("Not Found Id"));
 
-        return alarmLogRepository.findAlarmLogUserByAlarmIdAndDtm(requestDto.getAlarmId(), requestDto.getAlarmDtm());
+        var time = Optional.ofNullable(requestDto.getAlarmDtm())
+                .filter(StringUtils::hasText)
+                .orElseThrow(() -> new BadRequestException("Not Found Dtm"));
+
+        return alarmLogRepository.findAlarmLogUserByAlarmIdAndDtm(id,time);
     }
 
     /**
@@ -94,6 +115,7 @@ public class AlarmLogService {
                 .emailSendYn(projection.getEmailSendYn())
                 .smsSendYn(projection.getSmsSendYn())
                 .kakaoSendYn(projection.getKakaoSendYn())
+                .jqxCb(false)
                 .build();
     }
 
@@ -102,5 +124,12 @@ public class AlarmLogService {
      */
     private String getOrDefault(String value) {
         return value != null ? value : "";
+    }
+
+    /**
+     * 빈 문자열을 null 로 변환 (PostgreSQL 파라미터 타입 추론 오류 방지)
+     */
+    private String toNullIfEmpty(String value) {
+        return StringUtils.hasText(value) ? value : null;
     }
 }

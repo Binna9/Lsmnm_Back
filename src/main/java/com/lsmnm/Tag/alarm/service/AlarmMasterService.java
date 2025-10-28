@@ -6,8 +6,10 @@ import com.lsmnm.Tag.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -34,7 +36,7 @@ public class AlarmMasterService {
 
         List<AlarmMasterSearchResponseDto> alarmMasters = projections.stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
 
         // 100개씩 끊어서 Response 값 전달
         List<List<AlarmMasterSearchResponseDto>> chunkedList = IntStream.range(0, alarmMasters.size())
@@ -47,7 +49,6 @@ public class AlarmMasterService {
                         .collect(Collectors.toList()))
                 .collect(Collectors.toList());
 
-        // 조회 데이터 갯수 (statusMsg)
         int recordCount = alarmMasters.size();
         String statusMsg = String.format("[%s] %d record have been selected",
                 java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
@@ -57,7 +58,7 @@ public class AlarmMasterService {
                 .displaymsg(null)
                 .isSuccess(true)
                 .statusMsg(statusMsg)
-                .RK_ALARM(chunkedList)
+                .rkAlarm(chunkedList)
                 .build();
     }
 
@@ -65,8 +66,15 @@ public class AlarmMasterService {
      * 알람 사용자 정보 조회
      */
     public List<AlarmUserResponseDto> getAlarmUser(AlarmUserRequestDto requestDto) {
-        return alarmMasterRepository.findAlarmUser(requestDto.getAlarmUserType() , requestDto.getAlarmUserId(),
-                requestDto.getAlarmUserNm(), requestDto.getAlarmToRole(), requestDto.getAlarmToUser(), requestDto.getAlarmToUser2());
+
+        var type   = requestDto.getAlarmUserType();
+        var id     = requestDto.getAlarmUserId();
+        var name   = requestDto.getAlarmUserNm();
+        var role   = requestDto.getAlarmToRole();
+        var user   = requestDto.getAlarmToUser();
+        var user2  = requestDto.getAlarmToUser2();
+
+        return alarmMasterRepository.findAlarmUser(type, id, name, role, user, user2);
     }
 
     /**
@@ -74,11 +82,11 @@ public class AlarmMasterService {
      */
     public List<AlarmGroupResponseDto> getAlarmGroup(AlarmGroupRequestDto requestDto) {
 
-        if(requestDto.getAlarmGroupType() == null || requestDto.getAlarmGroupType().isEmpty()) {
-            throw new BadRequestException("Alarm group type is required");
-        }
+        var type = Optional.ofNullable(requestDto.getAlarmGroupType())
+                .filter(StringUtils::hasText)
+                .orElseThrow(() -> new BadRequestException("Alarm group type is required"));
 
-        return alarmMasterRepository.findAlarmGroup(requestDto.getAlarmGroupType());
+        return alarmMasterRepository.findAlarmGroup(type);
     }
 
     /**
@@ -123,7 +131,7 @@ public class AlarmMasterService {
                 .alarmKakaoTimeFl(projection.getAlarmKakaoTimeFl())
                 .alarmKakaoTimeCl(projection.getAlarmKakaoTimeCl())
                 .emailTitle(projection.getEmailTitle())
-                .jqxCb("false")
+                .jqxCb(false)
                 .build();
     }
 

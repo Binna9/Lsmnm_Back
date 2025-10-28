@@ -96,12 +96,12 @@ public interface AlarmMasterRepository extends JpaRepository<AlarmMaster, AlarmM
                 ORDER BY ROLE_CD
             """, nativeQuery = true)
     List<AlarmUserResponseDto> findAlarmUser(
-            @Param("alarmUserType") String alarmUserType,
-            @Param("alarmUserId") String alarmUserId,
-            @Param("alarmUserNm") String alarmUserNm,
-            @Param("alarmToRole") String alarmToRole,
-            @Param("alarmToUser") String alarmToUser,
-            @Param("alarmToUser2") String alarmToUser2);
+            @Param("ALARM_USER_TYPE") String alarmUserType,
+            @Param("ALARM_USER_ID") String alarmUserId,
+            @Param("ALARM_USER_NM") String alarmUserNm,
+            @Param("ALARM_TO_ROLE") String alarmToRole,
+            @Param("ALARM_TO_USER") String alarmToUser,
+            @Param("ALARM_TO_USER2") String alarmToUser2);
 
     /**
      * 알람 그룹 검색
@@ -117,7 +117,7 @@ public interface AlarmMasterRepository extends JpaRepository<AlarmMaster, AlarmM
                                 	 GROUP BY B.ALARM_GRP_ID
                                 	 ORDER BY B.ALARM_GRP_ID
             """, nativeQuery = true)
-    List<AlarmGroupResponseDto> findAlarmGroup(@Param("alarmGroupType") String alarmUserType);
+    List<AlarmGroupResponseDto> findAlarmGroup(@Param("ALARM_GRP_TYPE") String alarmGrpType);
 }
 
 

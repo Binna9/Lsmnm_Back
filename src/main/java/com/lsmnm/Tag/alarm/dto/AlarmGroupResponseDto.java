@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Getter
-@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class AlarmGroupResponseDto {
@@ -13,6 +13,14 @@ public class AlarmGroupResponseDto {
     private String alarmGrpId;
     @JsonProperty("ALARM_GRP_NM")
     private String alarmGrpNm;
+    @Builder.Default
     @JsonProperty("JQX_CB")
-    private Boolean jqxCb;
+    private Boolean jqxCb = false;
+
+    public AlarmGroupResponseDto(String alarmGrpId, String alarmGrpNm) {
+        this.alarmGrpId = alarmGrpId;
+        this.alarmGrpNm = alarmGrpNm;
+        this.jqxCb = false;
+    }
 }
+
