@@ -1428,7 +1428,7 @@ function fc_linkagePopup( pageId, arrParams, nWidth, nHeight, isModal ) {
 		fc_setSessionItem( 'GW_PGM_ID', pageId );
 		fc_setSessionItem( 'GW_TITLE' , '' );
 		// Spring Boot 프로젝트에 맞게 URL 수정
-		var targetPage = '/view/' + pageId + paramString;
+		var targetPage = '/T/' + pageId + paramString;
 		window.popWin.openPop( pageId, targetPage );
 		
 		

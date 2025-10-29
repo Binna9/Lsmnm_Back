@@ -1,8 +1,11 @@
 package com.lsmnm.Tag.alarm.service;
 
 import com.lsmnm.Tag.alarm.dto.*;
+import com.lsmnm.Tag.alarm.entity.AlarmMaster;
 import com.lsmnm.Tag.alarm.repository.AlarmMasterRepository;
 import com.lsmnm.Tag.exception.BadRequestException;
+import com.lsmnm.Tag.exception.InternalServerException;
+import com.lsmnm.Tag.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +22,6 @@ public class AlarmMasterService {
 
     private final AlarmMasterRepository alarmMasterRepository;
 
-    /**
-     * 알람 마스터 조회
-     */
     @Transactional
     public AlarmMasterListResponseDto searchAlarmMasters(AlarmMasterSearchRequestDto requestDto) {
 
@@ -62,9 +62,6 @@ public class AlarmMasterService {
                 .build();
     }
 
-    /**
-     * 알람 사용자 정보 조회
-     */
     @Transactional
     public List<AlarmUserResponseDto> getAlarmUser(AlarmUserRequestDto requestDto) {
 
@@ -78,17 +75,32 @@ public class AlarmMasterService {
         return alarmMasterRepository.findAlarmUser(type, id, name, role, user, user2);
     }
 
-    /**
-     * 알람 그룹 정보 조회
-     */
     @Transactional
     public List<AlarmGroupResponseDto> getAlarmGroup(AlarmGroupRequestDto requestDto) {
 
         var type = Optional.ofNullable(requestDto.getAlarmGroupType())
                 .filter(StringUtils::hasText)
-                .orElseThrow(() -> new BadRequestException("Alarm group type is required"));
+                .orElseThrow(() -> new BadRequestException("error.alarmlog.usergroup.type.required"));
 
         return alarmMasterRepository.findAlarmGroup(type);
+    }
+
+    @Transactional
+    public void deleteAlarmMasterService(AlarmMasterDeleteDto requestDto) {
+
+        if (!StringUtils.hasText(requestDto.getPlantCd()) || !StringUtils.hasText(requestDto.getAlarmId())) {
+            throw new BadRequestException("error.alarmmaster.required");
+        }
+
+        AlarmMaster alarmMaster  = alarmMasterRepository
+                .findById_PlantCdAndId_AlarmId(requestDto.getPlantCd(), requestDto.getAlarmId())
+                .orElseThrow(() -> new NotFoundException("error.alarmmaster.notfound"));
+
+        try {
+            alarmMasterRepository.delete(alarmMaster);
+        } catch (Exception e) {
+            throw new InternalServerException("error.alarmmaster.delete.failed");
+        }
     }
 
     /**

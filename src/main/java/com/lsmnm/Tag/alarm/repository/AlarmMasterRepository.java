@@ -11,13 +11,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AlarmMasterRepository extends JpaRepository<AlarmMaster, AlarmMasterId> {
 
-    /**
-     * 알람 마스터 조회
-     */
+    // master search
     @Query(value = """
              SELECT plant_cd as plantCd
                   , alarm_id as alarmId
@@ -72,9 +71,7 @@ public interface AlarmMasterRepository extends JpaRepository<AlarmMaster, AlarmM
             @Param("alarmMsgId") String alarmMsgId,
             @Param("alarmMsgContents") String alarmMsgContents);
 
-    /**
-     * 알람 사용자 검색
-     */
+    // user
     @Query(value = """
                 SELECT * FROM (
                     SELECT cd_val as ROLE_CD, cd_nm as ROLE_NM, null as role_nm2
@@ -103,9 +100,7 @@ public interface AlarmMasterRepository extends JpaRepository<AlarmMaster, AlarmM
             @Param("ALARM_TO_USER") String alarmToUser,
             @Param("ALARM_TO_USER2") String alarmToUser2);
 
-    /**
-     * 알람 그룹 검색
-     */
+    // Group
     @Query(value = """
                SELECT B.ALARM_GRP_ID, MAX(A.ALARM_GRP_NM) AS ALARM_GRP_NM
                                 	  FROM scom.sco_alarm_group_master A
@@ -118,6 +113,9 @@ public interface AlarmMasterRepository extends JpaRepository<AlarmMaster, AlarmM
                                 	 ORDER BY B.ALARM_GRP_ID
             """, nativeQuery = true)
     List<AlarmGroupResponseDto> findAlarmGroup(@Param("ALARM_GRP_TYPE") String alarmGrpType);
+
+    // Delete
+    Optional<AlarmMaster> findById_PlantCdAndId_AlarmId(String plantCd, String alarmId);
 }
 
 

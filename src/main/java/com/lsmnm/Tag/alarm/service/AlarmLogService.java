@@ -88,11 +88,11 @@ public class AlarmLogService {
 
         var id = Optional.ofNullable(requestDto.getAlarmId())
                 .filter(StringUtils::hasText)
-                .orElseThrow(() -> new BadRequestException("Not Found Id"));
+                .orElseThrow(() -> new BadRequestException("error.alarmlog.alarmid.required"));
 
         var time = Optional.ofNullable(requestDto.getAlarmDtm())
                 .filter(StringUtils::hasText)
-                .orElseThrow(() -> new BadRequestException("Not Found Dtm"));
+                .orElseThrow(() -> new BadRequestException("error.alarmlog.alarmdtm.required"));
 
         return alarmLogRepository.findAlarmLogUserByAlarmIdAndDtm(id,time);
     }

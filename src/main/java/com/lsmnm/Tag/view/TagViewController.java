@@ -11,7 +11,6 @@ public class TagViewController {
 
     /**
      * Tag Chart/Data 조회 (MAIN) - DONE
-     * GET/VIEW/BDP6012
      */
     @GetMapping("/BDP6012")
     public String bdp6012Page(Model model) {
@@ -20,7 +19,6 @@ public class TagViewController {
 
     /**
      * Tag Event / Alarm 관리 기준 (MAIN) - DONE
-     * GET/VIEW/BDP7070
      */
     @GetMapping("/BDP7070")
     public String bdp7070Page(Model model) {
@@ -29,7 +27,6 @@ public class TagViewController {
 
     /**
      * Chart 속성 변경 (SUB)
-     * GET/VIEW/SMZ6212 - DONE
      */
     @GetMapping("/SMZ6212")
     public String SMZ6212Page(Model model) {
@@ -38,7 +35,6 @@ public class TagViewController {
 
     /**
      * 사용자 계산식 추가 (SUB)
-     * GET/VIEW/SMZ6213 - DONE
      */
     @GetMapping("/SMZ6213")
     public String SMZ6213Page(Model model) {
@@ -47,7 +43,6 @@ public class TagViewController {
 
     /**
      * Chart 메모 (SUB)
-     * GET/VIEW/SMZ6214
      */
     @GetMapping("/SMZ6214")
     public String SMZ6214Page(Model model) {
@@ -56,7 +51,6 @@ public class TagViewController {
 
     /**
      * HTML 색상표 (SUB)
-     * GET/VIEW/SMZ6215
      */
     @GetMapping("/SMZ6215")
     public String SMZ6215Page(Model model) {
@@ -65,7 +59,6 @@ public class TagViewController {
 
     /**
      * 즐겨찾기 관리 (SUB)
-     * GET/VIEW/SMZ6216
      */
     @GetMapping("/SMZ6216")
     public String SMZ6216Page(Model model) {
@@ -74,7 +67,6 @@ public class TagViewController {
 
     /**
      * Tag Master 관리 기준 (SUB) - DONE
-     * GET/VIEW/SMZ7010
      */
     @GetMapping("/SMZ7010")
     public String SMZ7010Page(Model model) {
@@ -83,7 +75,6 @@ public class TagViewController {
 
     /**
      * Virtual Tag 관리 (SUB) - DONE
-     * GET/VIEW/SMZ7030
      */
     @GetMapping("/SMZ7030")
     public String SMZ7030Page(Model model) {

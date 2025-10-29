@@ -17,8 +17,6 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
-
-
 }
 
 repositories {
@@ -33,17 +31,15 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	// REDIS
+	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	// Mybatis
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
-	// POSTGRESQL
+	// PostGre
 	implementation 'org.postgresql:postgresql:42.7.3'
-
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
@@ -53,4 +49,20 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.named('bootJar') {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.named('jar') {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.named('processResources') {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.named('processTestResources') {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

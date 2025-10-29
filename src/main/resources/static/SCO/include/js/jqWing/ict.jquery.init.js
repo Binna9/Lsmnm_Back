@@ -245,7 +245,8 @@ function fc_getCurrentMenuIdAsync() {
 	}
 	
 	// 메뉴 ID를 받았으면 권한 적용 계속 진행
-	if ( mnuId ) {
+	// todo : 개발에선 하드 코딩 배포할 때는 mnuId
+	if ( "M000000255" ) {
 		fc_proceedWithAuthority( mnuId );
 	} else {
 		fc_requestMenuIdFromParent();
