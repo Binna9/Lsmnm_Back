@@ -114,7 +114,7 @@ public interface AlarmMasterRepository extends JpaRepository<AlarmMaster, AlarmM
             """, nativeQuery = true)
     List<AlarmGroupResponseDto> findAlarmGroup(@Param("ALARM_GRP_TYPE") String alarmGrpType);
 
-    // Delete
+    // Master Delete
     Optional<AlarmMaster> findById_PlantCdAndId_AlarmId(String plantCd, String alarmId);
 }
 
