@@ -33,6 +33,47 @@
         }
     </style>
     <script type="text/javascript">
+        (function(){
+            if (typeof fc_setSessionItem === 'function') {
+                fc_setSessionItem('GW_PGM_ID', 'SMZ6012');
+                fc_setSessionItem('GW_USER_ID', '99991201');
+            }
+            window.gwMesEnv = window.gwMesEnv || { user: {} };
+            window.gwMesEnv.user = window.gwMesEnv.user || {};
+            window.gwMesEnv.user.id = '99991201';
+            window.gwMesEnv.user.pgmId = 'SMZ6012';
+            window.gwJsonParam = window.gwJsonParam || {};
+            window.gwJsonParam['PGM_ID'] = 'SMZ6012';
+            window.gwJsonParam['MNU_ID'] = 'M000001459';
+            if (typeof fc_setDefaultParam === 'function') {
+                var __orig_fc_setDefaultParam = fc_setDefaultParam;
+                fc_setDefaultParam = function(prmServiceNm){
+                    __orig_fc_setDefaultParam(prmServiceNm);
+                    var forcedPgmId = (typeof fc_getSessionItem === 'function') ? fc_getSessionItem('GW_PGM_ID') : null;
+                    if (!forcedPgmId) forcedPgmId = window.gwMesEnv && window.gwMesEnv.user ? window.gwMesEnv.user.pgmId : null;
+                    if (forcedPgmId) {
+                        window.gwJsonParam['gwPgmId'] = forcedPgmId;
+                        window.gwJsonParam['PGM_ID'] = forcedPgmId;
+                    }
+                    window.gwJsonParam['MNU_ID'] = 'M000001459';
+                    window.gwJsonParam['USER_ID'] = '99991201';
+                    window.gwJsonParam['gwLoginId'] = '99991201';
+                    try {
+                        if (typeof fc_setSessionItem === 'function') {
+                            fc_setSessionItem('GW_SYSTEM_ENV', window.gwMesEnv);
+                        }
+                    } catch(e) {}
+                };
+            }
+        })();
+        $(function(){
+            window.gwMesEnv = window.gwMesEnv || { user: {} };
+            window.gwMesEnv.user = window.gwMesEnv.user || {};
+            window.gwMesEnv.user.pgmId = 'SMZ6012';
+            if (typeof fc_setSessionItem === 'function') {
+                fc_setSessionItem('GW_SYSTEM_ENV', window.gwMesEnv);
+            }
+        });
 
         //*********************************************************************************************
         // ********** Declare public variable
